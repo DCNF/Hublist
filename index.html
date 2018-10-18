@@ -1,69 +1,82 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="favicon.ico">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="icon" href="favicon.ico">
 
-    <title>Hublist</title>
+		<title>Hublist</title>
 
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
 
-    <!-- Custom styles for this template -->
-    <link href="starter-template.css" rel="stylesheet">
-    <link href="custom.css" rel="stylesheet">
-  </head>
+		<!--  DataTables CSS -->
+		<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/datatables.net-bs4@1.10.18/css/dataTables.bootstrap4.min.css"/>
 
-  <body>
+		<!-- Custom styles for this template -->
+		<link href="starter-template.css" rel="stylesheet">
+		<link href="custom.css" rel="stylesheet">
+	</head>
 
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" href="#">Hublist</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+	<body>
 
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="./hublist.xml">Download the client list (xml)</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="https://tankafett.biz/?do=hublist&action=add">Adding a new hub</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
+		<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+			<a class="navbar-brand" href="#">The DCNF Hublist</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
 
-    <main role="main" class="container">
+			<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+				<ul class="navbar-nav mr-auto">
+					<li class="nav-item active">
+						<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+					</li>
+					<li class="nav-item nav-item dropdown show">
+						<a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download client list</a>
+						<div class="dropdown-menu show" aria-labelledby="dropdown01">
+							<a class="dropdown-item" href="./hublist.xml">the XML hublist</a>
+							<a class="dropdown-item" href="#">the xml.bz2 hublist</a>
+						</div>
+					</li>
+					<li class="nav-item">
+						<!--<a class="nav-link disabled"  href="https://tankafett.biz/?do=hublist&action=add" >Adding a new hub</a>-->
+						<a class="nav-link disabled"  href="#" >Adding a new hub</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
 
-      <div class="starter-template">
-        <h1>Bootstrap starter template</h1>
-        <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
-      </div>
+		<main role="main" class="container">
 
-      <div id="tt">
-      </div>
+			<div class="starter-template">
+				<h1>The DCNF Hublist</h1>
+				<p class="lead">Here you can see a list of ADC(S) and DCHUB Hub.<br> You can download the client side lists in the menu above.</p>
+			</div>
 
-    </main><!-- /.container -->
+			<div id="HublistTable"></div>
 
-    <!-- Bootstrap core JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+		</main><!-- /.container -->
 
-    <script type='text/javascript' src='data.js'></script>
+		<!-- Bootstrap core JavaScript -->
+		<!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>-->
 
-    <script type="text/javascript">
-      readJsonFile('hublist.xml');
-    </script>
-      
-    </script>
+		<!-- Datatables Javascript -->
+		<!--<script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>-->
 
-  </body>
+		<!-- Jquery + Bootstrap + Datatables Javascript -->
+
+		<script src="https://cdn.jsdelivr.net/combine/npm/jquery@3.3.1/dist/jquery.slim.min.js,npm/popper.js@1.14.3,npm/bootstrap@4.1.3/dist/js/bootstrap.min.js,npm/datatables@1.10.18/media/js/jquery.dataTables.min.js,npm/datatables.net-bs4@1.10.18,npm/he@1.1.1"></script>
+
+		<script type='text/javascript' src='data.js'></script>
+
+		<script type="text/javascript">
+			readXMLHublist('hublist.xml');
+		</script>
+
+	</body>
 </html>
