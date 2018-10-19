@@ -18,7 +18,7 @@ function readXMLHublist(link) {
 }
 
 function tableFromXML(data) {
-	var tab = '<table class="table table-striped" id="sortableTable">';
+	var tab = '<table class="table table-striped" id="sortableTable" style="width:100%">';
 	tab += '<thead>';
 	tab += '<tr>';
 	tab += '<th scope="col">Name</th>';
@@ -52,10 +52,14 @@ function tableFromXML(data) {
 			"columnDefs": [
 				{ "searchable": false, "targets": [2, 3] },
 				{ "orderable": false, "targets": 1 },
-    			{ "width": "40%", "targets": [0, 1] }
-			]
+				{ "width": "40%", "targets": [0, 1] }
+			],
+			rowReorder: {
+				selector: 'td:nth-child(2)'
+			},
+			responsive: true
 		});
-	} );
+	});
 }
 
 // based on https://stackoverflow.com/a/14919494
