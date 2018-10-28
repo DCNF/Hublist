@@ -19,11 +19,18 @@ def indent(elem, level=0):
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
 
-urls = [ # list based on https://sourceforge.net/p/dcplusplus/code/ci/default/tree/dcpp/SettingsManager.cpp#l197
+urls = [ 
+    # list based on:
+    # - https://sourceforge.net/p/dcplusplus/code/ci/default/tree/dcpp/SettingsManager.cpp#l197
+    # - https://github.com/airdcpp/airgit/blob/master/airdcpp/airdcpp/SettingsManager.cpp#L339
+    # - https://github.com/pavel-pimenov/flylinkdc-r5xx/blob/master/compiled/Settings/flylinkdc-config-r5xx.xml#L22
     "http://www.te-home.net/?do=hublist&get=hublist.xml",
-    "https://dchublist.ru/hublist.xml.bz2",
     "http://dchublist.org/hublist.xml.bz2",
-#    "http://hublist.eu/hublist.xml.bz2"# cloudflare
+    "https://dchublist.ru/hublist.xml.bz2",
+    #"http://hublist.eu/hublist.xml.bz2", # cloudflare
+    #"http://dchublists.com/?do=hublist&get=hublist.xml", # unknown error
+    #"http://www.hublista.hu/hublist.xml.bz2", # too many timeout
+    "http://dchublist.biz/?do=hublist.xml.bz2",
 ]
 xml_files = []
 
@@ -61,9 +68,9 @@ for xml_file, url in zip(xml_files, urls):
             continue
         hubs[hub_adr] = hub
 
-# Keep only colums common to all files
-colnames = set.intersection(*colsets)
-print('Keeping columns common to all files:', [c[0] for c in colnames])
+# Keep all colums encountered
+colnames = set.union(*colsets)
+print('Columns in output file:', [c[0] for c in colnames])
 
 # Prepare output file
 merge_root = ET.Element('Hublist')
@@ -76,8 +83,12 @@ for cn in colnames:
 for hub_adr, hub_elem in hubs.items():
     attribs = {}
     for k in colnames:
-        c = k[0]
-        attribs[c] = hub_elem.attrib[c]
+        c, type_ = k
+        if c in hub_elem.attrib:
+            attribs[c] = hub_elem.attrib[c]
+        else:
+            # Inserting default value
+            attribs[c] = ''
     ET.SubElement(merge_hubs, 'Hub', attribs)
 
 indent(merge_root)
