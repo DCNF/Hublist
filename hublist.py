@@ -56,10 +56,20 @@ for xml_file, url in zip(xml_files, urls):
     for hub in root.iter('Hub'):
         hub_adr = hub.attrib['Address']
 
+        # Fix dchub://lecameleon.ddns.net:411;4861;1204;416;412 (from http://dchublist.org/hublist.xml.bz2)
+        if hub_adr == "dchub://lecameleon.ddns.net:411;4861;1204;416;412":
+            hub_adr = "dchub://lecameleon.ddns.net:411"
+
         # Add DCHUB protocol to url if no protocol is specified
         if not urllib.parse.urlparse(hub_adr).scheme:
             print('Adding dchub:// to hub adress with unspecified protocol', hub_adr)
-            hub_adr = "dchub://"+hub_adr
+            hub_adr = "dchub://" + hub_adr
+            hub.attrib['Address'] = hub_adr
+
+        # Add DCHUB optional port to url if no pot is specified
+        if urllib.parse.urlparse(hub_adr).scheme == "dchub" and not urllib.parse.urlparse(hub_adr).port:
+            print('Adding :411 to hub adress with unspecified port', hub_adr)
+            hub_adr = hub_adr + ":411"
             hub.attrib['Address'] = hub_adr
 
         # Remove duplicate hubs
