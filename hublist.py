@@ -2,6 +2,7 @@ import bz2
 import urllib, urllib.request, urllib.parse
 import sys
 import xml.etree.cElementTree as ET
+import socket
 
 # in-place prettyprint formatter from http://effbot.org/zone/element-lib.htm#prettyprint
 def indent(elem, level=0):
@@ -18,6 +19,21 @@ def indent(elem, level=0):
     else:
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
+
+# based on https://github.com/openstack/charm-plumgrid-gateway/blob/master/hooks/charmhelpers/contrib/network/ip.py
+def is_ip(address):
+    try:
+        # Test to see if already an IPv4 address
+        socket.inet_aton(address)
+        return True
+    except socket.error:
+        return False
+
+def get_host_ip(hostname, fallback=None):
+    if is_ip(hostname):
+        return hostname
+    ip_addr = socket.gethostbyname(hostname)
+    return ip_addr
 
 urls = [ 
     # list based on:
@@ -53,28 +69,30 @@ for xml_file, url in zip(xml_files, urls):
         colset.add((c.attrib['Name'], c.attrib['Type']))
     colsets.append(colset)
 
-    for hub in root.iter('Hub'):
-        hub_adr = hub.attrib['Address']
-
-        # Fix dchub://lecameleon.ddns.net:411;4861;1204;416;412 (from http://dchublist.org/hublist.xml.bz2)
-        if hub_adr == "dchub://lecameleon.ddns.net:411;4861;1204;416;412":
-            hub_adr = "dchub://lecameleon.ddns.net:411"
+    for hub in root.iter('Hub'): 
 
         # Add DCHUB protocol to url if no protocol is specified
-        if not urllib.parse.urlparse(hub_adr).scheme:
-            print('Adding dchub:// to hub adress with unspecified protocol', hub_adr)
-            hub_adr = "dchub://" + hub_adr
-            hub.attrib['Address'] = hub_adr
+        if not urllib.parse.urlparse(hub.attrib['Address']).scheme:
+            print('Adding dchub:// to hub adress with unspecified protocol', hub.attrib['Address'])
+            hub.attrib['Address'] = "dchub://" + hub.attrib['Address']
 
-        # Add DCHUB optional port to url if no pot is specified
-        if urllib.parse.urlparse(hub_adr).scheme == "dchub" and not urllib.parse.urlparse(hub_adr).port:
+        # Add DCHUB optional port to url if no port is specified
+        if urllib.parse.urlparse(hub.attrib['Address']).scheme == "dchub" and not urllib.parse.urlparse(hub.attrib['Address']).port:
             print('Adding :411 to hub adress with unspecified port', hub_adr)
-            hub_adr = hub_adr + ":411"
-            hub.attrib['Address'] = hub_adr
+            hub.attrib['Address'] = hub.attrib['Address'] + ":411"
 
         # Remove duplicate hubs
-        if hub_adr in hubs.keys():
-            print('Dropping duplicate hub', hub_adr, 'from hub list', url)
+        try:
+            ip = get_host_ip(urllib.parse.urlparse(hub.attrib['Address']).hostname)
+            hub_adr = urllib.parse.urlparse(hub.attrib['Address']).scheme + "://" + ip + ":" + str(urllib.parse.urlparse(hub.attrib['Address']).port)
+            if hub_adr in hubs.keys():
+                print('Dropping duplicate hub', hub_adr, 'from hub list', url)
+                for key in hubs[hub_adr].keys():
+                    if key not in hubs[hub_adr].keys():
+                        hubs[hub_adr][key] = hub[key]
+                continue
+        except:
+            print(hub.attrib['Address'], 'does not respond to ping, IGNORED')
             continue
         hubs[hub_adr] = hub
 
