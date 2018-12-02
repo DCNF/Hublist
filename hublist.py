@@ -78,7 +78,7 @@ for xml_file, url in zip(xml_files, urls):
 
         # Add DCHUB optional port to url if no port is specified
         if urllib.parse.urlparse(hub.attrib['Address']).scheme == "dchub" and not urllib.parse.urlparse(hub.attrib['Address']).port:
-            print('Adding :411 to hub adress with unspecified port', hub_adr)
+            print('Adding :411 to hub adress with unspecified port', hub.attrib['Address'])
             hub.attrib['Address'] = hub.attrib['Address'] + ":411"
 
         # Remove duplicate hubs
