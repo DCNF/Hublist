@@ -28,24 +28,24 @@
 		<link href="floating-labels.css" rel="stylesheet">
 	</head>
 	<body>
-		<form class="form-signin" action="https://dev.staticman.net/v3/entry/github/DCNF/Hublist/master">
+		<form class="form-signin" action="https://dev.staticman.net/v3/entry/github/DCNF/Hublist/master/hubs">
 			<div class="text-center mb-4">
 				<h1 class="h3 mb-3 font-weight-normal">Adding Hub</h1>
 				<p>Add your hub using this form!</p>
 			</div>
 
 			<div class="form-label-group">
-				<input type="text" id="inputNick" class="form-control" placeholder="Your Nick" required autofocus>
+				<input type="text" id="fields[inputNick]" class="form-control" placeholder="Your Nick" required autofocus>
 				<label for="inputNick">Your Nick</label>
 			</div>
 			
 			<div class="form-label-group">
-				<input type="text" id="inputHubName" class="form-control" placeholder="Hub Name" required>
+				<input type="text" id="fields[inputHubName]" class="form-control" placeholder="Hub Name" required>
 				<label for="inputHubName">Hub Name</label>
 			</div>
 
 			<div class="form-label-group">
-				<input type="url" id="inputHubAddress" class="form-control" pattern="(.?dc.{0,3}s?:\/\/.+)\w+:?([0-9]*)" placeholder="Hub Address" required>
+				<input type="url" id="fields[inputHubAddress]" class="form-control" pattern="(.?dc.{0,3}s?:\/\/.+)\w+:?([0-9]*)" placeholder="Hub Address" required>
 				<label for="inputHubAddress">Hub Address</label>
 			</div>
 
