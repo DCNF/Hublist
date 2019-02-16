@@ -33,13 +33,13 @@
 			<h1 class="h3 mb-3 font-weight-normal">Adding Hub</h1>
 			<p>Add your hub using this form!</p>
 
-			<label for="inputNick" class="sr-only">Your Nick</label>	
+			<label for="fields[inputNick]" class="sr-only">Your Nick</label>	
 			<input type="text" id="fields[inputNick]" class="form-control" placeholder="Your Nick" required autofocus>
 
-			<label for="inputHubName" class="sr-only">Hub Name</label>
+			<label for="fields[inputHubName]" class="sr-only">Hub Name</label>
 			<input type="text" id="fields[inputHubName]" class="form-control" placeholder="Hub Name" required>
 
-			<label for="inputHubAddress" class="sr-only">Hub Address</label>
+			<label for="fields[inputHubAddress]" class="sr-only">Hub Address</label>
 			<input type="url" id="fields[inputHubAddress]" class="form-control" pattern="(.?dc.{0,3}s?:\/\/.+)\w+:?([0-9]*)" placeholder="Hub Address" required>
 
 			<button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
