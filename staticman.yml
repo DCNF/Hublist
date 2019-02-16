@@ -16,7 +16,7 @@ comments:
   branch: "master"
 
   # Text to use as the commit message or pull request title. Accepts placeholders.
-  commitMessage: "Adding addition of an hub"
+  commitMessage: "Adding a hub"
 
   # (*) REQUIRED
   #
@@ -74,4 +74,4 @@ comments:
   # List of transformations to apply to any of the fields supplied. Keys are
   # the name of the field and values are possible transformation types.
   transforms:
-    #email: md5
+    email: md5
