@@ -29,7 +29,7 @@
 	</head>
 	<body class="text-center">
 		<form class="form-signin" method="POST" action="https://dev.staticman.net/v3/entry/github/DCNF/Hublist/master/hubs">
-
+			<input name="options[redirect]" type="hidden" value="https://dcnf.github.io/Hublist/">
 			<h1>The DCNF Hublist</h1>
 			<p>Add a hub using this form!</p>
 
@@ -45,7 +45,7 @@
 
 			<div class="form-group">
 				<label for="fields[address]" class="sr-only">The Hub Address</label>
-				<input type="text" id="fields[address]" name="fields[address]" class="form-control" placeholder="Enter the Hub Address" pattern="(.?dc.{0,3}s?:\/\/.+)\w+:?([0-9]*)" required>
+				<input type="url" id="fields[address]" name="fields[address]" class="form-control" placeholder="Enter the Hub Address" pattern="(.?dc.{0,3}s?:\/\/.+)\w+:?([0-9]*)" required>
 			</div>
 
 			<button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
