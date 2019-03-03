@@ -30,17 +30,37 @@
 	<body class="text-center">
 		<form class="form-signin" method="POST" action="https://dev.staticman.net/v3/entry/github/DCNF/Hublist/master/hubs">
 
-			<h1 class="h3 mb-3 font-weight-normal">Adding Hub</h1>
-			<p>Add your hub using this form!</p>
+			<h1>The DCNF Hublist</h1>
+			<p>Add a hub using this form!</p>
 
-			<label for="fields[nick]" class="sr-only">Your Nick</label>	
-			<input type="text" id="fields[nick]" name="fields[nick]" class="form-control" placeholder="Your Nick" required autofocus>
+			<div class="form-group">
+				<label for="fields[nick]" class="sr-only">Your Nick</label>	
+				<input type="text" id="fields[nick]" name="fields[nick]" class="form-control" placeholder="Enter your Nick" required autofocus>
+			</div>
 
-			<label for="fields[name]" class="sr-only">Hub Name</label>
-			<input type="text" id="fields[name]" name="fields[name]" class="form-control" placeholder="Hub Name" required>
+			<div class="form-group">
+				<label for="fields[name]" class="sr-only">The Hub Name</label>
+				<input type="text" id="fields[name]" name="fields[name]" class="form-control" placeholder="Enter the Hub Name" required>
+			</div>
 
-			<label for="fields[address]" class="sr-only">Hub Address</label>
-			<input type="url" id="fields[address]" name="fields[address]" class="form-control" pattern="(.?dc.{0,3}s?:\/\/.+)\w+:?([0-9]*)" placeholder="Hub Address" required>
+			<div class="form-group">
+				<label for="fields[address]" class="sr-only">The Hub Address</label>
+				<div class="row">
+					<div class="col-sm-10">
+						<select class="form-control" id="fields[protocol]" name="fields[protocol]">
+							<option vale="adc://">adc://</option>
+							<option vale="adcs://">adcs://</option>
+							<option vale="dchub://" selected>dchub://</option>
+						</select>
+					</div>
+					<div class="col">
+						<input type="text" id="fields[address]" name="fields[address]" class="form-control" placeholder="Enter the Hub Address" required>
+					</div>
+					<div class="col-sm-10">
+						<input type="number" id="fields[port]" name="fields[port]" class="form-control" min="1" placeholder="Enter the Hub Port" required>
+					</div>
+				</div>
+			</div>
 
 			<button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
 		</form>
