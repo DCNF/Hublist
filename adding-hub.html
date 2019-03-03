@@ -45,21 +45,7 @@
 
 			<div class="form-group">
 				<label for="fields[address]" class="sr-only">The Hub Address</label>
-				<div class="row">
-					<div class="col-sm-10">
-						<select class="form-control" id="fields[protocol]" name="fields[protocol]">
-							<option vale="adc://">adc://</option>
-							<option vale="adcs://">adcs://</option>
-							<option vale="dchub://" selected>dchub://</option>
-						</select>
-					</div>
-					<div class="col">
-						<input type="text" id="fields[address]" name="fields[address]" class="form-control" placeholder="Enter the Hub Address" required>
-					</div>
-					<div class="col-sm-10">
-						<input type="number" id="fields[port]" name="fields[port]" class="form-control" min="1" placeholder="Enter the Hub Port" required>
-					</div>
-				</div>
+				<input type="text" id="fields[address]" name="fields[address]" class="form-control" placeholder="Enter the Hub Address" pattern="(.?dc.{0,3}s?:\/\/.+)\w+:?([0-9]*)" required>
 			</div>
 
 			<button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
