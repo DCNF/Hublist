@@ -83,7 +83,7 @@ def hub_merge(hub1, hub2):
     # Set attributes with no value in hub1 from value in hub2
     for att, _ in attributes:
         if att in hub2.attrib:
-            if hub1.attrib.get(att) == None and hub2.attrib.get(att) != None:
+            if (hub1.attrib.get(att) == None or hub1.attrib.get(att) == '') and hub2.attrib.get(att) != None and hub2.attrib.get(att) != '':
                 hub1.attrib[att] = hub2.attrib[att]
     return hub1
 
