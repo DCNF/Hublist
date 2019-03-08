@@ -101,9 +101,8 @@ for url in internet_hublists:
 for local_hublist in local_hublists:
     print('Loading hub list from', local_hublist)
     if local_hublist.endswith('.bz2'):
-        local_hublist = bz2.decompress(local_hublist)
-    tree = ET.parse(local_hublist)
-    root = tree.getroot()
+        local_hublist = bz2.BZ2File(local_hublist)
+    root = ET.parse(local_hublist).getroot()
     xml_files.append(ET.tostring(root).decode())
 
 # Parsing XML files
