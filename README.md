@@ -2,14 +2,26 @@
 
 ## How to use hublist.py?
 
+The pinger helps us having more accurate data of an hub. 
+
+### With the pinger DCPing
+
+Version 0.8.8 of dcping works with our script (`a6e91ec`).
+
 ```
-$ python3 hublist.py "[folder_to_dc_ping]/dcping"
+$ python3 hublist.py "[folder_to_dcping]/dcping"
 ```
 
-### `dcping`?
+### Without the pinger
 
-**DCPing** is a pinger build here: https://github.com/direct-connect/go-dcpp/tree/master/cmd/dcping.  
-You must [build](https://github.com/direct-connect/go-dcpp/tree/master/cmd/dcping#build) it before using it.
+```
+$ python3 hublist.py
+```
+
+### `DCPing`?
+
+**DCPing** is an open-source pinger build on GitHub: https://github.com/direct-connect/go-dcpp/tree/master/cmd/dcping.  
+You can have a functionnal version by [building its source](https://github.com/direct-connect/go-dcpp/tree/master/cmd/dcping#build).
 
 ## Which attribute is used?
 
