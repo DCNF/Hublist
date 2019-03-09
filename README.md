@@ -6,7 +6,7 @@ The pinger helps us having more accurate data of an hub.
 
 ### With the pinger DCPing
 
-Version 0.8.8 of dcping works with our script (`a6e91ec`).
+Version 0.8.10 of dcping works with our script (`4d51d48`).
 
 ```
 $ python3 hublist.py "[folder_to_dcping]/dcping"
