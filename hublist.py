@@ -20,7 +20,7 @@ internet_hublists = [
     #"http://hublist.eu/hublist.xml.bz2", # cloudflare
     "http://dchublists.com/?do=hublist&get=hublist.xml",
     #"http://www.hublista.hu/hublist.xml.bz2", # too many timeout
-    #"http://dchublist.biz/?do=hublist.xml.bz2", # unknown error
+    "http://dchublist.biz/?do=hublist.xml.bz2",
 ]
 
 local_hublists = [
@@ -129,6 +129,7 @@ clean_hubs = []
 
 while len(hubs) != 0:
     hub = hubs[0]    
+    isPublic = True
 
     if len(sys.argv) >= 2:
         output = run([sys.argv[1], 'ping', hub.attrib['Address'], '--out=xml'], check=False, stdout=PIPE).stdout
@@ -136,15 +137,20 @@ while len(hubs) != 0:
         print(hub_response.attrib['Address'])
         if hub_response.attrib['Status'] == 'Error':
             hub_response = hub
+        elif hub_response.attrib.get('ErrCode') == '226':
+            isPublic = False
+
     else:
         hub_response = hub
 
-    duplicata_hubs = [ h for h in hubs if h.attrib['Address'] in (hub_response.attrib['Address'], hub_response.attrib.get('Failover')) ]
+    if isPublic is True:
+        duplicata_hubs = [ h for h in hubs if h.attrib['Address'] in (hub_response.attrib['Address'], hub_response.attrib.get('Failover')) ]
 
-    for duplicata_hub in duplicata_hubs: 
-        hub_response = hub_merge(hub_response, duplicata_hub)
+        for duplicata_hub in duplicata_hubs: 
+            hub_response = hub_merge(hub_response, duplicata_hub)
 
-    clean_hubs.append(hub_response)
+        clean_hubs.append(hub_response)
+
     hubs = [ h for h in hubs if h.attrib['Address'] not in (hub_response.attrib['Address'], hub_response.attrib.get('Failover')) ]
 
 # Prepare output file
