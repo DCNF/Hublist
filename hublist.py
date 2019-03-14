@@ -115,12 +115,10 @@ for xml_file in xml_files:
 
         # Add DCHUB protocol to url if no protocol is specified
         if not urllib.parse.urlparse(hub.attrib['Address']).scheme:
-            print('Adding dchub:// to hub adress with unspecified protocol', hub.attrib['Address'])
             hub.attrib['Address'] = 'dchub://' + hub.attrib['Address']
 
         # Add NMDC optional port to url if no port is specified
         if urllib.parse.urlparse(hub.attrib['Address']).scheme == 'dchub' and not urllib.parse.urlparse(hub.attrib['Address']).port:
-            print('Adding :411 to hub adress with unspecified port', hub.attrib['Address'])
             hub.attrib['Address'] = hub.attrib['Address'] + ':411'
 
         hubs.append(hub)
@@ -132,18 +130,19 @@ while len(hubs) != 0:
     isPublic = True
 
     if len(sys.argv) >= 2:
-        output = run([sys.argv[1], 'ping', hub.attrib['Address'], '--out=xml'], check=False, stdout=PIPE).stdout
+        output = run([sys.argv[1], 'ping', hub.attrib['Address'], '--out=xml', '--hubs=2', '--slots=6', '--share=324882100000'], check=False, stdout=PIPE).stdout
         hub_response = ET.fromstring(output)
         print(hub_response.attrib['Address'])
         if hub_response.attrib['Status'] == 'Error':
-            hub_response = hub
-        elif hub_response.attrib.get('ErrCode') == '226':
-            isPublic = False
+            if hub_response.attrib.get('ErrCode') == '226':
+                isPublic = False
+            else:
+                hub_response = hub         
 
     else:
         hub_response = hub
 
-    if isPublic is True:
+    if isPublic:
         duplicata_hubs = [ h for h in hubs if h.attrib['Address'] in (hub_response.attrib['Address'], hub_response.attrib.get('Failover')) ]
 
         for duplicata_hub in duplicata_hubs: 
