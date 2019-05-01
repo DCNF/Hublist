@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import bz2
-import json
 import socket
 import sys
 import urllib, urllib.request, urllib.parse
