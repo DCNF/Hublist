@@ -32,6 +32,7 @@ local_hublists = [
 # timeout in seconds
 timeout = 10
 socket.setdefaulttimeout(timeout)
+
 ##### END OF THE CONFIGURATION #####
 
 # List of attributes, in the form (attribute name, type)
@@ -139,10 +140,12 @@ while len(hubs) != 0:
     isPublic = True
 
     if len(sys.argv) >= 2:
+        cmd = [sys.argv[1], 'ping', hub.attrib['Address'], '--out=xml', '--hubs=2', '--slots=6', '--share=324882100000']
+
         if urllib.parse.urlparse(hub.attrib['Address']).scheme in ('dchub', 'nmdcs'):
-            output = run([sys.argv[1], 'ping', hub.attrib['Address'], '--out=xml', '--encoding=' + hub.attrib['Encoding'], '--hubs=2', '--slots=6', '--share=324882100000'], check=False, stdout=PIPE).stdout
-        else:
-            output = run([sys.argv[1], 'ping', hub.attrib['Address'], '--out=xml', '--hubs=2', '--slots=6', '--share=324882100000'], check=False, stdout=PIPE).stdout
+            cmd.append('--encoding=' + hub.attrib['Encoding'])
+
+        output = run(cmd, check=False, stdout=PIPE).stdout
         hub_response = ET.fromstring(output).iter('Hub').__next__()
         print(hub_response.attrib['Address'])
         if hub_response.attrib['Status'] == 'Error':
