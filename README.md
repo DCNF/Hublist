@@ -6,7 +6,7 @@ The pinger helps us having more accurate data of an hub.
 
 ### With the pinger DCPing
 
-Version [v0.8.16](https://github.com/direct-connect/go-dcpp/tree/v0.8.16) of dcping is compatible with this script.
+Version [v0.16.4](https://github.com/direct-connect/go-dcpp/tree/v0.16.4) of dcping is compatible with this script.
 
 ```
 $ python3 hublist.py "[folder_to_dcping]/dcping"
