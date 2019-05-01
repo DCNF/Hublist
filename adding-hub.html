@@ -45,7 +45,21 @@
 
 			<div class="form-group">
 				<label for="fields[address]" class="sr-only">The Hub Address</label>
-				<input type="url" id="fields[address]" name="fields[address]" class="form-control" placeholder="Enter the Hub Address" pattern="(.?dc.{0,3}s?:\/\/.+)\w+:?([0-9]*)" required>
+				<input type="url" id="fields[address]" name="fields[address]" class="form-control" placeholder="Enter the Hub Address" pattern="(.{0,2}dc.{0,3}s?:\/\/.+)\w+:?([0-9]*)" required>
+			</div>
+
+			<div class="form-group">
+				<label for="fields[encoding]" class="sr-only">The Hub Encoding</label>
+				<select class="form-control" id="fields[encoding]" name="fields[encoding]" class="form-control" placeholder="Choose the Hub Encoding" required>
+					<option value="" selected>UTF-8</option>
+					<option value="cp1250">Central Europe: CP1250</option>
+					<option value="cp1251">Cyrillic: CP1251</option>
+					<option value="cp1252">Western Europe: CP1252</option>
+					<option value="cp1253">Greek: CP1253</option>
+					<option value="cp1254">Turkish: CP1254</option>
+					<option value="cp1256">Hebrew: CP1256</option>
+					<option value="gb18030">China: GB18030</option>
+				</select>
 			</div>
 
 			<button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
