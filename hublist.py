@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import bz2
+import json
 import socket
 import sys
 import urllib, urllib.request, urllib.parse
@@ -9,6 +10,9 @@ import xml.etree.cElementTree as ET
 from subprocess import run, PIPE
 
 ##### CAN BE CONFIGURED #####
+
+own_hublist = "https://dcnf.github.io/Hublist/ownDataHublist.xml"
+
 internet_hublists = [
     # list based on:
     # - https://sourceforge.net/p/dcplusplus/code/ci/default/tree/dcpp/SettingsManager.cpp#l197
@@ -89,6 +93,8 @@ def hub_merge(hub1, hub2):
 xml_files = []
 
 # Download files (and extract if necessary)
+internet_hublists.insert(0, own_hublist)
+
 for url in internet_hublists:
     print('Will download hub list from', url)
     xml_file = urllib.request.urlopen(url).read()
@@ -120,7 +126,12 @@ for xml_file in xml_files:
         if urllib.parse.urlparse(hub.attrib['Address']).scheme == 'dchub' and not urllib.parse.urlparse(hub.attrib['Address']).port:
             hub.attrib['Address'] = hub.attrib['Address'] + ':411'
 
-        hubs.append(hub)
+        # Delete if no Encoding is set
+        if urllib.parse.urlparse(hub.attrib['Address']).scheme in ('dchub', 'nmdcs'):
+            if hub.attrib.get('Encoding') != None and hub.attrib.get('Encoding') != '':
+                hubs.append(hub)
+        else:
+            hubs.append(hub)
 
 clean_hubs = []
 
@@ -129,7 +140,10 @@ while len(hubs) != 0:
     isPublic = True
 
     if len(sys.argv) >= 2:
-        output = run([sys.argv[1], 'ping', hub.attrib['Address'], '--out=xml', '--hubs=2', '--slots=6', '--share=324882100000'], check=False, stdout=PIPE).stdout
+        if urllib.parse.urlparse(hub.attrib['Address']).scheme in ('dchub', 'nmdcs'):
+            output = run([sys.argv[1], 'ping', hub.attrib['Address'], '--out=xml', '--encoding=' + hub.attrib['Encoding'], '--hubs=2', '--slots=6', '--share=324882100000'], check=False, stdout=PIPE).stdout
+        else:
+            output = run([sys.argv[1], 'ping', hub.attrib['Address'], '--out=xml', '--hubs=2', '--slots=6', '--share=324882100000'], check=False, stdout=PIPE).stdout
         hub_response = ET.fromstring(output).iter('Hub').__next__()
         print(hub_response.attrib['Address'])
         if hub_response.attrib['Status'] == 'Error':
