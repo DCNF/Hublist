@@ -1,10 +1,12 @@
-# Error      
+# Errors
       
 ## connection closed: This hub supports secure connection, please update your favorites to: nmdcs://piter.feardc.net:411      
       
 dchub://piter.feardc.net:411      
 dchub://hub-mahno.ru:411      
 dchub://iluzija.feardc.net:4011      
+
+Related to: https://github.com/direct-connect/go-dcpp/issues/89
       
 ## connection closed: Error: Your DC++ tag is reporting less then 0 hubs or slots!      
       
@@ -47,7 +49,9 @@ dchub://pointpleasant.ddns.net:411
  Best regards from VAZ.      
       
 dchub://hub.verlihub.net:7777      
-```      
+```  
+
+Related to: https://github.com/Verlihub/verlihub/issues/174
       
 ## nmdc: chat message, got command      
       
