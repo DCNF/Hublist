@@ -129,7 +129,10 @@ for xml_file in xml_files:
         # Delete if no Encoding is set
         if urllib.parse.urlparse(hub.attrib['Address']).scheme in ('dchub', 'nmdcs'):
             if hub.attrib.get('Encoding') != None and hub.attrib.get('Encoding') != '':
-                hubs.append(hub)
+                if hub.attrib['Encoding'].lower() in ('utf-8', 'cp1250', 'cp1251', 'cp1252', 'cp1253', 'cp1254', 'cp1256', 'gb18030'):
+                    hubs.append(hub)
+                else:
+                    print('Unknown encoding:', hub.attrib.get('Encoding'))
         else:
             hubs.append(hub)
 
@@ -140,13 +143,13 @@ while len(hubs) != 0:
     isPublic = True
 
     if len(sys.argv) >= 2:
-        cmd = [sys.argv[1], 'ping', hub.attrib['Address'], '--out=xml', '--hubs=2', '--slots=6', '--share=324882100000']
+        cmd = [sys.argv[1], 'ping', hub.attrib['Address'], '--out=xml-line', '--hubs=2', '--slots=6', '--share=324882100000']
 
         if urllib.parse.urlparse(hub.attrib['Address']).scheme in ('dchub', 'nmdcs'):
             cmd.append('--encoding=' + hub.attrib['Encoding'])
 
         output = run(cmd, check=False, stdout=PIPE).stdout
-        hub_response = ET.fromstring(output).iter('Hub').__next__()
+        hub_response = ET.fromstring(output)
         print(hub_response.attrib['Address'])
         if hub_response.attrib['Status'] == 'Error':
             if hub_response.attrib.get('ErrCode') == '226':
