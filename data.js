@@ -18,7 +18,7 @@ function readXMLHublist(link) {
 }
 
 function tableFromXML(data) {
-	var tab = '<table class="table table-striped" id="sortableTable" style="width:100%">';
+	var tab = '<table class="table table-responsive table-striped" id="sortableTable" style="width:100%">';
 	tab += '<thead>';
 	tab += '<tr>';
 	tab += '<th scope="col">Name</th>';
