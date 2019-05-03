@@ -47,8 +47,8 @@ function tableFromXML(data) {
 
 	$(document).ready(function() {
 		$('#sortableTable').DataTable({
-			"iDisplayLength": 50,
-			"aLengthMenu": [[50, 100, 250, -1], [50, 100, 250, "All"]],
+			"pageLength": 50,
+			"lengthMenu": [[50, 100, 250, -1], [50, 100, 250, "All"]],
 			"columnDefs": [
 				{ "searchable": false, "targets": [2, 3] },
 				{ "orderable": false, "targets": 1 },
