@@ -135,9 +135,11 @@ for xml_file in xml_files:
                 if hub.attrib['Encoding'].lower() in supported_encoding:
                     hubs.append(hub)
                 else:
-                    print('Unknown encoding:', hub.attrib.get('Encoding'))
-        else:
+                    print('Unknown encoding:', hub.attrib.get('Encoding'), hub.attrib['Address'])
+        elif urllib.parse.urlparse(hub.attrib['Address']).scheme in ('adc', 'adcs'):
             hubs.append(hub)
+        else:
+            print('Unknown scheme:', urllib.parse.urlparse(hub.attrib['Address']).scheme, hub.attrib['Address'])
 
 clean_hubs = []
 
