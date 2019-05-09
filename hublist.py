@@ -85,6 +85,25 @@ def indent(elem, level=0):
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
 
+def hub_addr_compare(adrr_hub1, adrr_hub2):
+    if urllib.parse.urlparse(adrr_hub1).hostname != urllib.parse.urlparse(adrr_hub2).hostname:
+        return False
+    if urllib.parse.urlparse(adrr_hub1).port != urllib.parse.urlparse(adrr_hub2).port:
+        return False
+    return True
+
+def reorder(hub):
+    # yes, it's priorizing adcs
+    if urllib.parse.urlparse(hub.attrib['Address']).scheme == 'adcs':
+        if urllib.parse.urlparse(hub.attrib['Address']).query.startswith('kp='):
+            return 1
+        else:
+            return 2
+    elif urllib.parse.urlparse(hub.attrib['Address']).scheme == 'adc':
+        return 3
+    else:
+        return 4
+
 def hub_merge(hub1, hub2):
     # Set attributes with no value in hub1 from value in hub2
     for att, _ in attributes:
@@ -141,6 +160,8 @@ for xml_file in xml_files:
         else:
             print('Unknown scheme:', urllib.parse.urlparse(hub.attrib['Address']).scheme, hub.attrib['Address'])
 
+hubs.sort(key=reorder)
+
 clean_hubs = []
 
 while len(hubs) != 0:
@@ -166,14 +187,14 @@ while len(hubs) != 0:
         hub_response = hub
 
     if isPublic:
-        duplicata_hubs = [ h for h in hubs if h.attrib['Address'] in (hub_response.attrib['Address'], hub_response.attrib.get('Failover')) ]
+        duplicata_hubs = [ h for h in hubs if (hub_addr_compare(h.attrib['Address'], hub_response.attrib['Address']) or hub_addr_compare(h.attrib['Address'], hub_response.attrib.get('Failover'))) ]
 
         for duplicata_hub in duplicata_hubs:
             hub_response = hub_merge(hub_response, duplicata_hub)
 
         clean_hubs.append(hub_response)
 
-    hubs = [ h for h in hubs if h.attrib['Address'] not in (hub_response.attrib['Address'], hub_response.attrib.get('Failover')) ]
+    hubs = [ h for h in hubs if (not hub_addr_compare(h.attrib['Address'], hub_response.attrib['Address']) and not hub_addr_compare(h.attrib['Address'], hub_response.attrib.get('Failover'))) ]
 
 # Prepare output file
 merge_root = ET.Element('Hublist', Name='The DCNF Hublist', Address='https://dcnf.github.io/Hublist/')
