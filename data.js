@@ -23,6 +23,7 @@ function tableFromXML(data) {
 	tab += '<tr>';
 	tab += '<th scope="col">Name</th>';
 	tab += '<th scope="col">Address</th>';
+	tab += '<th scope="col">Encoding</th>';
 	tab += '<th scope="col">Shared</th>';
 	tab += '<th scope="col">Users</th>';
 	tab += '</tr>';
@@ -34,6 +35,7 @@ function tableFromXML(data) {
 		tab += '<td title="' + he.encode(data[i].getAttribute('Description')) + '" class="' + data[i].getAttribute('Status') + '" data-order="' + he.encode(data[i].getAttribute('Name')) + '" >';
 		tab += '' + he.encode(data[i].getAttribute('Name')) + '' + '</td>';
 		tab += '<td><a href="' + data[i].getAttribute('Address') + '" >' + data[i].getAttribute('Address') + '</a></td>';
+		tab += '<td>' + data[i].getAttribute('Encoding') + '</td>';
 		tab += '<td data-order="' + data[i].getAttribute('Shared') + '">' + humanFileSize(data[i].getAttribute('Shared'), true) + '</td>';
 		tab += '<td>' + data[i].getAttribute('Users') + '</td>';
 
@@ -50,7 +52,7 @@ function tableFromXML(data) {
 			"pageLength": 25,
 			"lengthMenu": [[10, 25, 50, 100, 250, -1], [10, 25, 50, 100, 250, "All"]],
 			"columnDefs": [
-				{ "searchable": false, "targets": [2, 3] },
+				{ "searchable": false, "targets": [3, 4] },
 				{ "orderable": false, "targets": 1 },
 				{ "width": "40%", "targets": [0, 1] }
 			],
