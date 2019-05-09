@@ -66,7 +66,7 @@ attributes = (
         ('Failover', 'string'),
 )
 
-# Supported NMDC Encoding
+# Supported NMDC Encoding (should be in lower)
 supported_encoding = ['utf-8', 'cp1250', 'cp1251', 'cp1252', 'cp1253', 'cp1254', 'cp1256', 'cp1257','gb18030']
 
 # in-place prettyprint formatter from http://effbot.org/zone/element-lib.htm#prettyprint
@@ -156,6 +156,7 @@ for xml_file in xml_files:
                 else:
                     print('Unknown encoding:', hub.attrib.get('Encoding'), hub.attrib['Address'])
         elif urllib.parse.urlparse(hub.attrib['Address']).scheme in ('adc', 'adcs'):
+            hub.attrib['Encoding'] = 'UTF-8'
             hubs.append(hub)
         else:
             print('Unknown scheme:', urllib.parse.urlparse(hub.attrib['Address']).scheme, hub.attrib['Address'])
