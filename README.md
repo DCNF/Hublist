@@ -28,9 +28,10 @@ $ python3 hublist.py
 
 ## Which attribute is used?
 
-- https://sourceforge.net/p/dcplusplus/code/ci/default/tree/dcpp/FavoriteManager.cpp#l322
-- https://github.com/airdcpp/airgit/blob/master/airdcpp/airdcpp/modules/HublistManager.cpp#L58
-- https://github.com/pavel-pimenov/flylinkdc-r5xx/blob/master/windows/PublicHubsFrm.cpp#L56
+- DC++: https://sourceforge.net/p/dcplusplus/code/ci/default/tree/dcpp/FavoriteManager.cpp#l322
+- AirDC++: https://github.com/airdcpp/airgit/blob/master/airdcpp/airdcpp/modules/HublistManager.cpp#L58
+- EiskaltDC++: https://github.com/eiskaltdcpp/eiskaltdcpp/blob/master/eiskaltdcpp-gtk/src/publichubs.cc#L46
+- FlyLinkDC: https://github.com/pavel-pimenov/flylinkdc-r5xx/blob/master/windows/PublicHubsFrm.cpp#L56
 
 ## Why some hubs are offline, and written on your hublist as online?
 
