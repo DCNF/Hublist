@@ -17,12 +17,14 @@ internet_hublists = [
     # - https://sourceforge.net/p/dcplusplus/code/ci/default/tree/dcpp/SettingsManager.cpp#l197
     # - https://github.com/airdcpp/airgit/blob/master/airdcpp/airdcpp/SettingsManager.cpp#L339
     # - https://github.com/pavel-pimenov/flylinkdc-r5xx/blob/master/compiled/Settings/flylinkdc-config-r5xx.xml#L22
+    # - https://github.com/eiskaltdcpp/eiskaltdcpp/blob/master/dcpp/SettingsManager.cpp#L165
     "http://www.te-home.net/?do=hublist&get=hublist.xml",
     "http://dchublist.org/hublist.xml.bz2",
     "https://dchublist.ru/hublist.xml.bz2",
     #"http://hublist.eu/hublist.xml.bz2", # cloudflare
     #"http://www.hublista.hu/hublist.xml.bz2", # too many timeout
     "http://dchublist.biz/?do=hublist.xml.bz2",
+    "https://tankafett.biz/?do=hublist&get=hublist.xml.bz2",
 ]
 
 local_hublists = [
@@ -92,8 +94,11 @@ def hub_addr_compare(adrr_hub1, adrr_hub2):
         return False
     return True
 
-def reorder(hub):
-    # yes, it's priorizing adcs
+def priorize_hub(hub):
+    # yes, it's priorizing:
+    # adcs with kp, adcs
+    # then adc, dchubs / nmdcs
+    # and then others
     if urllib.parse.urlparse(hub.attrib['Address']).scheme == 'adcs':
         if urllib.parse.urlparse(hub.attrib['Address']).query.startswith('kp='):
             return 1
@@ -101,8 +106,10 @@ def reorder(hub):
             return 2
     elif urllib.parse.urlparse(hub.attrib['Address']).scheme == 'adc':
         return 3
-    else:
+    elif urllib.parse.urlparse(hub.attrib['Address']).scheme in ('nmdcs', 'dchubs'):
         return 4
+    else:
+        return 5
 
 def hub_merge(hub1, hub2):
     # Set attributes with no value in hub1 from value in hub2
@@ -161,7 +168,7 @@ for xml_file in xml_files:
         else:
             print('Unknown scheme:', urllib.parse.urlparse(hub.attrib['Address']).scheme, hub.attrib['Address'])
 
-hubs.sort(key=reorder)
+hubs.sort(key=priorize_hub)
 
 clean_hubs = []
 
