@@ -14,10 +14,10 @@ own_hublist = "https://dcnf.github.io/Hublist/ownDataHublist.xml"
 
 internet_hublists = [
     # list based on:
-    # - https://sourceforge.net/p/dcplusplus/code/ci/default/tree/dcpp/SettingsManager.cpp#l197
-    # - https://github.com/airdcpp/airgit/blob/master/airdcpp/airdcpp/SettingsManager.cpp#L339
-    # - https://github.com/pavel-pimenov/flylinkdc-r5xx/blob/master/compiled/Settings/flylinkdc-config-r5xx.xml#L22
-    # - https://github.com/eiskaltdcpp/eiskaltdcpp/blob/master/dcpp/SettingsManager.cpp#L165
+    # - https://sourceforge.net/p/dcplusplus/code/ci/3c319cedf81ff67e1ac23785bde381e1104ef36c/tree/dcpp/SettingsManager.cpp#l197
+    # - https://github.com/airdcpp/airgit/blob/9954da1c62e2f379925569fdaebe2a125c86ec3f/airdcpp/airdcpp/SettingsManager.cpp#L339
+    # - https://github.com/pavel-pimenov/flylinkdc-r5xx/blob/24db5c7582a22a00aa132b6a5b8eab57ba9dbdaf/compiled/Settings/flylinkdc-config-r5xx.xml#L22
+    # - https://github.com/eiskaltdcpp/eiskaltdcpp/blob/2b38b58eed1547f1a6769d8c7c3a7039dda54c39/dcpp/SettingsManager.cpp#L165
     "http://www.te-home.net/?do=hublist&get=hublist.xml",
     "http://dchublist.org/hublist.xml.bz2",
     "https://dchublist.ru/hublist.xml.bz2",
