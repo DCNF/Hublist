@@ -30,7 +30,7 @@ $ python3 hublist.py
 
 - DC++: [dcpp/FavoriteManager.cpp#l322](https://sourceforge.net/p/dcplusplus/code/ci/3c319ced/tree/dcpp/FavoriteManager.cpp#l322)
 - AirDC++: [modules/HublistManager.cpp#L58](https://github.com/airdcpp/airgit/blob/9954da1c/airdcpp/airdcpp/modules/HublistManager.cpp#L58)
-- EiskaltDC++: [dcpp/HubEntry.h#L43](https://github.com/eiskaltdcpp/eiskaltdcpp/blob/2b38b58e/dcpp/HubEntry.h#L43)
+- EiskaltDC++: [dcpp/FavoriteManager.cpp#L255](https://github.com/eiskaltdcpp/eiskaltdcpp/blob/2b38b58e/dcpp/FavoriteManager.cpp#L255)
 - FlyLinkDC: [windows/PublicHubsFrm.cpp#L56](https://github.com/pavel-pimenov/flylinkdc-r5xx/blob/24db5c75/windows/PublicHubsFrm.cpp#L56)
 
 
