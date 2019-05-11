@@ -18,7 +18,6 @@ internet_hublists = [
     # - AirDC++: [airdcpp/airdcpp/SettingsManager.cpp#L339](https://github.com/airdcpp/airgit/blob/9954da1c62e2f379925569fdaebe2a125c86ec3f/airdcpp/airdcpp/SettingsManager.cpp#L339)
     # - FlyLinkDC: [compiled/Settings/flylinkdc-config-r5xx.xml#L22](https://github.com/pavel-pimenov/flylinkdc-r5xx/blob/24db5c7582a22a00aa132b6a5b8eab57ba9dbdaf/compiled/Settings/flylinkdc-config-r5xx.xml#L22)
     # - EiskaltDC++: [dcpp/SettingsManager.cpp#L165](https://github.com/eiskaltdcpp/eiskaltdcpp/blob/2b38b58eed1547f1a6769d8c7c3a7039dda54c39/dcpp/SettingsManager.cpp#L165)
-    "https://dcnf.github.io/Hublist/hublist.xml.bz2", # the backup
     "http://www.te-home.net/?do=hublist&get=hublist.xml",
     "http://dchublist.org/hublist.xml.bz2",
     "https://dchublist.ru/hublist.xml.bz2",
@@ -26,6 +25,7 @@ internet_hublists = [
     #"http://www.hublista.hu/hublist.xml.bz2", # too many timeout
     "http://dchublist.biz/?do=hublist.xml.bz2",
     "https://tankafett.biz/?do=hublist&get=hublist.xml.bz2",
+    "https://dcnf.github.io/Hublist/hublist.xml.bz2", # a backup
 ]
 
 local_hublists = [
