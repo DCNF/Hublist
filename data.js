@@ -26,6 +26,7 @@ function tableFromXML(data) {
 	tab += '<th scope="col">Encoding</th>';
 	tab += '<th scope="col">Shared</th>';
 	tab += '<th scope="col">Users</th>';
+	tab += '<th scope="col">More details</th>';
 	tab += '</tr>';
 	tab += '</thead>';
 	tab += '</tbody>';
@@ -38,7 +39,31 @@ function tableFromXML(data) {
 		tab += '<td>' + data[i].getAttribute('Encoding') + '</td>';
 		tab += '<td data-order="' + data[i].getAttribute('Shared') + '">' + humanFileSize(data[i].getAttribute('Shared'), true) + '</td>';
 		tab += '<td>' + data[i].getAttribute('Users') + '</td>';
-
+		tab += '<td><button type="button" class="btn btn-link" data-toggle="modal" data-target="#hubModal" onclick="buildModal(\'' 
+		+ he.encode(data[i].getAttribute('Name')) 
+		+ '\',\'' + data[i].getAttribute('Address')
+		+ '\',\'' + encodeURIComponent(he.encode(data[i].getAttribute('Description')))
+		+ '\',\'' + data[i].getAttribute('Users') 
+		+ '\',\'' + data[i].getAttribute('Country') 
+		+ '\',\'' + humanFileSize(data[i].getAttribute('Shared'), true) 
+		+ '\',\'' + data[i].getAttribute('Minshare') 
+		+ '\',\'' + data[i].getAttribute('Minslots') 
+		+ '\',\'' + data[i].getAttribute('Maxhubs') 
+		+ '\',\'' + data[i].getAttribute('Maxusers') 
+		+ '\',\'' + data[i].getAttribute('Reliability') 
+		+ '\',\'' + data[i].getAttribute('Rating') 
+		+ '\',\'' + data[i].getAttribute('Encoding') 
+		+ '\',\'' + data[i].getAttribute('Software') 
+		+ '\',\'' + data[i].getAttribute('Website') 
+		+ '\',\'' + data[i].getAttribute('Email') 
+		+ '\',\'' + data[i].getAttribute('ASN') 
+		+ '\',\'' + data[i].getAttribute('Operators') 
+		+ '\',\'' + data[i].getAttribute('Bots') 
+		+ '\',\'' + data[i].getAttribute('Infected') 
+		+ '\',\'' + data[i].getAttribute('Status') 
+		+ '\',\'' + data[i].getAttribute('Failover') 
+		+ '\');">';
+		tab += 'Hub details</button></td>';
 		tab += '</tr>';
 	}
 
@@ -62,6 +87,32 @@ function tableFromXML(data) {
 			responsive: true
 		});
 	});
+}
+
+function buildModal(name, address, description, users, country, shared, minshare, minslots, maxhubs, maxusers, reliability, rating, encoding, software, website, email, asn, operators, bots, infected, status, failover){
+	document.getElementById("hubModalName").innerText = 'Hub: ' + name;
+	document.getElementById("hubname").innerText = name;
+	document.getElementById("hubaddress").innerText = address;
+	document.getElementById("hubdescription").innerText = he.decode(decodeURIComponent(description));
+	document.getElementById("hubusers").innerText = users;
+	document.getElementById("hubcountry").innerText = country;
+	document.getElementById("hubshared").innerText = shared;
+	document.getElementById("hubminshare").innerText = minshare;
+	document.getElementById("hubminslots").innerText = minslots;
+	document.getElementById("hubmaxhubs").innerText = maxhubs;
+	document.getElementById("hubmaxusers").innerText = maxusers;
+	document.getElementById("hubreliability").innerText = reliability;
+	document.getElementById("hubrating").innerText = rating;
+	document.getElementById("hubencoding").innerText = encoding;
+	document.getElementById("hubsoftware").innerText = software;
+	document.getElementById("hubwebsite").innerText = website;
+	document.getElementById("hubemail").innerText = email;
+	document.getElementById("hubasn").innerText = asn;
+	document.getElementById("huboperators").innerText = operators;
+	document.getElementById("hubbots").innerText = bots;
+	document.getElementById("hubinfected").innerText = infected;
+	document.getElementById("hubstatus").innerText = status;
+	document.getElementById("hubfailover").innerText = failover;
 }
 
 // based on https://stackoverflow.com/a/14919494
