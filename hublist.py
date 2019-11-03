@@ -14,15 +14,18 @@ own_hublist = "https://dcnf.github.io/Hublist/ownDataHublist.xml"
 
 internet_hublists = [
     # list based on:
-    # - https://sourceforge.net/p/dcplusplus/code/ci/default/tree/dcpp/SettingsManager.cpp#l197
-    # - https://github.com/airdcpp/airgit/blob/master/airdcpp/airdcpp/SettingsManager.cpp#L339
-    # - https://github.com/pavel-pimenov/flylinkdc-r5xx/blob/master/compiled/Settings/flylinkdc-config-r5xx.xml#L22
+    # - DC++: [dcpp/SettingsManager.cpp#l197](https://sourceforge.net/p/dcplusplus/code/ci/3c319cedf81ff67e1ac23785bde381e1104ef36c/tree/dcpp/SettingsManager.cpp#l197)
+    # - AirDC++: [airdcpp/airdcpp/SettingsManager.cpp#L339](https://github.com/airdcpp/airgit/blob/9954da1c62e2f379925569fdaebe2a125c86ec3f/airdcpp/airdcpp/SettingsManager.cpp#L339)
+    # - FlyLinkDC: [compiled/Settings/flylinkdc-config-r5xx.xml#L22](https://github.com/pavel-pimenov/flylinkdc-r5xx/blob/24db5c7582a22a00aa132b6a5b8eab57ba9dbdaf/compiled/Settings/flylinkdc-config-r5xx.xml#L22)
+    # - EiskaltDC++: [dcpp/SettingsManager.cpp#L165](https://github.com/eiskaltdcpp/eiskaltdcpp/blob/2b38b58eed1547f1a6769d8c7c3a7039dda54c39/dcpp/SettingsManager.cpp#L165)
     "http://www.te-home.net/?do=hublist&get=hublist.xml",
     "http://dchublist.org/hublist.xml.bz2",
     "https://dchublist.ru/hublist.xml.bz2",
     #"http://hublist.eu/hublist.xml.bz2", # cloudflare
     #"http://www.hublista.hu/hublist.xml.bz2", # too many timeout
     "http://dchublist.biz/?do=hublist.xml.bz2",
+    "https://tankafett.biz/?do=hublist&get=hublist.xml.bz2",
+    "https://dcnf.github.io/Hublist/hublist.xml.bz2", # a backup
 ]
 
 local_hublists = [
@@ -66,7 +69,7 @@ attributes = (
         ('Failover', 'string'),
 )
 
-# Supported NMDC Encoding
+# Supported NMDC Encoding (should be in lower)
 supported_encoding = ['utf-8', 'cp1250', 'cp1251', 'cp1252', 'cp1253', 'cp1254', 'cp1256', 'cp1257','gb18030']
 
 # in-place prettyprint formatter from http://effbot.org/zone/element-lib.htm#prettyprint
@@ -84,6 +87,30 @@ def indent(elem, level=0):
     else:
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
+
+def hub_addr_compare(adrr_hub1, adrr_hub2):
+    if urllib.parse.urlparse(adrr_hub1).hostname != urllib.parse.urlparse(adrr_hub2).hostname:
+        return False
+    if urllib.parse.urlparse(adrr_hub1).port != urllib.parse.urlparse(adrr_hub2).port:
+        return False
+    return True
+
+def priorize_hub(hub):
+    # yes, it's priorizing:
+    # adcs with kp, adcs
+    # then adc, dchubs / nmdcs
+    # and then others
+    if urllib.parse.urlparse(hub.attrib['Address']).scheme == 'adcs':
+        if urllib.parse.urlparse(hub.attrib['Address']).query.startswith('kp='):
+            return 1
+        else:
+            return 2
+    elif urllib.parse.urlparse(hub.attrib['Address']).scheme == 'adc':
+        return 3
+    elif urllib.parse.urlparse(hub.attrib['Address']).scheme in ('nmdcs', 'dchubs'):
+        return 4
+    else:
+        return 5
 
 def hub_merge(hub1, hub2):
     # Set attributes with no value in hub1 from value in hub2
@@ -137,9 +164,12 @@ for xml_file in xml_files:
                 else:
                     print('Unknown encoding:', hub.attrib.get('Encoding'), hub.attrib['Address'])
         elif urllib.parse.urlparse(hub.attrib['Address']).scheme in ('adc', 'adcs'):
+            hub.attrib['Encoding'] = 'UTF-8'
             hubs.append(hub)
         else:
             print('Unknown scheme:', urllib.parse.urlparse(hub.attrib['Address']).scheme, hub.attrib['Address'])
+
+hubs.sort(key=priorize_hub)
 
 clean_hubs = []
 
@@ -166,14 +196,14 @@ while len(hubs) != 0:
         hub_response = hub
 
     if isPublic:
-        duplicata_hubs = [ h for h in hubs if h.attrib['Address'] in (hub_response.attrib['Address'], hub_response.attrib.get('Failover')) ]
+        duplicata_hubs = [ h for h in hubs if (hub_addr_compare(h.attrib['Address'], hub_response.attrib['Address']) or hub_addr_compare(h.attrib['Address'], hub_response.attrib.get('Failover'))) ]
 
         for duplicata_hub in duplicata_hubs:
             hub_response = hub_merge(hub_response, duplicata_hub)
 
         clean_hubs.append(hub_response)
 
-    hubs = [ h for h in hubs if h.attrib['Address'] not in (hub_response.attrib['Address'], hub_response.attrib.get('Failover')) ]
+    hubs = [ h for h in hubs if (not hub_addr_compare(h.attrib['Address'], hub_response.attrib['Address']) and not hub_addr_compare(h.attrib['Address'], hub_response.attrib.get('Failover'))) ]
 
 # Prepare output file
 merge_root = ET.Element('Hublist', Name='The DCNF Hublist', Address='https://dcnf.github.io/Hublist/')

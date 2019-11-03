@@ -57,11 +57,121 @@
 			</div>
 
 			<div id="HublistTable"></div>
+			
+			<div class="modal fade" id="hubModal" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="hubModalName"></h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body" >
+							<table class="table table-responsive table-striped" style="display:inline-table;">
+								<tbody style="width:100%">
+									<tr>
+										<th scope="row">Name:</th>
+										<td id="hubname">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Description:</th>
+										<td class="text-break" id="hubdescription">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Address:</th>
+										<td id="hubaddress">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Failover:</th>
+										<td id="hubfailover">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Encoding:</th>
+										<td id="hubencoding">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Status:</th>
+										<td id="hubstatus">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Users:</th>
+										<td id="hubusers">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Operators:</th>
+										<td id="huboperators">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Bots:</th>
+										<td id="hubbots">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Infected:</th>
+										<td id="hubinfected">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Shared:</th>
+										<td id="hubshared">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Minshare:</th>
+										<td id="hubminshare">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Minslots:</th>
+										<td id="hubminslots">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Maxhubs:</th>
+										<td id="hubmaxhubs">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Maxusers:</th>
+										<td id="hubmaxusers">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Reliability:</th>
+										<td id="hubreliability">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Rating:</th>
+										<td id="hubrating">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Country:</th>
+										<td id="hubcountry">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">ASN:</th>
+										<td id="hubasn">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Software:</th>
+										<td id="hubsoftware">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Website:</th>
+										<td id="hubwebsite">N/A</td>
+									</tr>
+									<tr>
+										<th scope="row">Email:</th>
+										<td id="hubemail">N/A</td>
+									</tr>					
+								</tbody>
+							</table>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
 
 		</main><!-- /.container -->
 
 		<!-- JavaScript -->
-		<script src="https://cdn.jsdelivr.net/combine/npm/jquery@3.3.1/dist/jquery.slim.min.js,npm/popper.js@1.14.7,npm/bootstrap@4.3.1/dist/js/bootstrap.min.js,npm/datatables.net@1.10.19,npm/datatables.net-bs4@1.10.19,npm/he@1.2.0,npm/datatables.net-responsive@2.2.3,npm/datatables.net-rowreorder-bs4@1.2.5,npm/datatables.net-responsive-bs4@2.2.3"></script>
+		<script src="https://cdn.jsdelivr.net/combine/npm/jquery@3.4.1/dist/jquery.slim.min.js,npm/popper.js@1.16.0,npm/bootstrap@4.3.1/dist/js/bootstrap.min.js,npm/datatables.net@1.10.20,npm/datatables.net-bs4@1.10.20,npm/he@1.2.0,npm/datatables.net-responsive@2.2.3,npm/datatables.net-rowreorder-bs4@1.2.6,npm/datatables.net-responsive-bs4@2.2.3"></script>
 
 		<script type='text/javascript' src='data.js'></script>
 
