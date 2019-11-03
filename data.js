@@ -46,7 +46,7 @@ function tableFromXML(data) {
 		+ '\',\'' + data[i].getAttribute('Users') 
 		+ '\',\'' + data[i].getAttribute('Country') 
 		+ '\',\'' + humanFileSize(data[i].getAttribute('Shared'), true) 
-		+ '\',\'' + data[i].getAttribute('Minshare') 
+		+ '\',\'' + humanFileSize(data[i].getAttribute('Minshare'), true) 
 		+ '\',\'' + data[i].getAttribute('Minslots') 
 		+ '\',\'' + data[i].getAttribute('Maxhubs') 
 		+ '\',\'' + data[i].getAttribute('Maxusers') 
@@ -81,6 +81,7 @@ function tableFromXML(data) {
 				{ "orderable": false, "targets": 1 },
 				{ "width": "40%", "targets": [0, 1] }
 			],
+			aaSorting: [],
 			rowReorder: {
 				selector: 'td:nth-child(2)'
 			},
@@ -101,7 +102,7 @@ function buildModal(name, address, description, users, country, shared, minshare
 	document.getElementById("hubminslots").innerText = minslots;
 	document.getElementById("hubmaxhubs").innerText = maxhubs;
 	document.getElementById("hubmaxusers").innerText = maxusers;
-	document.getElementById("hubreliability").innerText = reliability;
+	document.getElementById("hubreliability").innerText = reliability + '%';
 	document.getElementById("hubrating").innerText = rating;
 	document.getElementById("hubencoding").innerText = encoding;
 	document.getElementById("hubsoftware").innerText = software;
@@ -111,7 +112,7 @@ function buildModal(name, address, description, users, country, shared, minshare
 	document.getElementById("huboperators").innerText = operators;
 	document.getElementById("hubbots").innerText = bots;
 	document.getElementById("hubinfected").innerText = infected;
-	document.getElementById("hubstatus").innerText = status;
+	document.getElementById("hubstatus").innerHTML = '<span title=' + status + '>' + (status === "Online" ? "&#9989;" : "&#10060;") + '</span>';
 	document.getElementById("hubfailover").innerText = failover;
 }
 
