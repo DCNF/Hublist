@@ -112,7 +112,7 @@ function buildModal(name, address, description, users, country, shared, minshare
 	document.getElementById("huboperators").innerText = operators;
 	document.getElementById("hubbots").innerText = bots;
 	document.getElementById("hubinfected").innerText = infected;
-	document.getElementById("hubstatus").innerHTML = '<span title=' + status + '>' + (status === "Online" ? "&#9989;" : "&#10060;") + '</span>';
+	document.getElementById("hubstatus").innerHTML = '<span title=' + status + '>' + (status === "Online" ? "&#10004;" : "&#10060;") + '</span>';
 	document.getElementById("hubfailover").innerText = failover;
 }
 
