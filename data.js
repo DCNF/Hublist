@@ -30,8 +30,8 @@ function tableFromXML(data) {
 	tab += '</tr>';
 	tab += '</thead>';
 	tab += '</tbody>';
-	
-	for (var i = data.length - 1; i >= 0; i--) {
+
+	for (var i = 0; i < data.length; i++) {
 		tab += '<tr>';
 		tab += '<td title="' + he.encode(data[i].getAttribute('Description')) + '" class="' + data[i].getAttribute('Status') + '" data-order="' + he.encode(data[i].getAttribute('Name')) + '" >';
 		tab += '' + he.encode(data[i].getAttribute('Name')) + '' + '</td>';
@@ -40,28 +40,28 @@ function tableFromXML(data) {
 		tab += '<td data-order="' + data[i].getAttribute('Shared') + '">' + humanFileSize(data[i].getAttribute('Shared'), true) + '</td>';
 		tab += '<td>' + data[i].getAttribute('Users') + '</td>';
 		tab += '<td><button type="button" class="btn btn-link" data-toggle="modal" data-target="#hubModal" onclick="buildModal(\'' 
-		+ he.encode(data[i].getAttribute('Name')) 
+		+ encodeURIComponent(he.encode(data[i].getAttribute('Name')))
 		+ '\',\'' + data[i].getAttribute('Address')
 		+ '\',\'' + encodeURIComponent(he.encode(data[i].getAttribute('Description')))
-		+ '\',\'' + data[i].getAttribute('Users') 
-		+ '\',\'' + data[i].getAttribute('Country') 
-		+ '\',\'' + humanFileSize(data[i].getAttribute('Shared'), true) 
-		+ '\',\'' + humanFileSize(data[i].getAttribute('Minshare'), true) 
-		+ '\',\'' + data[i].getAttribute('Minslots') 
-		+ '\',\'' + data[i].getAttribute('Maxhubs') 
-		+ '\',\'' + data[i].getAttribute('Maxusers') 
-		+ '\',\'' + data[i].getAttribute('Reliability') 
-		+ '\',\'' + data[i].getAttribute('Rating') 
-		+ '\',\'' + data[i].getAttribute('Encoding') 
-		+ '\',\'' + data[i].getAttribute('Software') 
-		+ '\',\'' + data[i].getAttribute('Website') 
-		+ '\',\'' + data[i].getAttribute('Email') 
-		+ '\',\'' + data[i].getAttribute('ASN') 
-		+ '\',\'' + data[i].getAttribute('Operators') 
-		+ '\',\'' + data[i].getAttribute('Bots') 
-		+ '\',\'' + data[i].getAttribute('Infected') 
-		+ '\',\'' + data[i].getAttribute('Status') 
-		+ '\',\'' + data[i].getAttribute('Failover') 
+		+ '\',\'' + data[i].getAttribute('Users')
+		+ '\',\'' + data[i].getAttribute('Country')
+		+ '\',\'' + humanFileSize(data[i].getAttribute('Shared'), true)
+		+ '\',\'' + humanFileSize(data[i].getAttribute('Minshare'), true)
+		+ '\',\'' + data[i].getAttribute('Minslots')
+		+ '\',\'' + data[i].getAttribute('Maxhubs')
+		+ '\',\'' + data[i].getAttribute('Maxusers')
+		+ '\',\'' + data[i].getAttribute('Reliability')
+		+ '\',\'' + data[i].getAttribute('Rating')
+		+ '\',\'' + data[i].getAttribute('Encoding')
+		+ '\',\'' + data[i].getAttribute('Software')
+		+ '\',\'' + data[i].getAttribute('Website')
+		+ '\',\'' + data[i].getAttribute('Email')
+		+ '\',\'' + data[i].getAttribute('ASN')
+		+ '\',\'' + data[i].getAttribute('Operators')
+		+ '\',\'' + data[i].getAttribute('Bots')
+		+ '\',\'' + data[i].getAttribute('Infected')
+		+ '\',\'' + data[i].getAttribute('Status')
+		+ '\',\'' + data[i].getAttribute('Failover')
 		+ '\');">';
 		tab += 'Hub details</button></td>';
 		tab += '</tr>';
@@ -81,7 +81,7 @@ function tableFromXML(data) {
 				{ "orderable": false, "targets": 1 },
 				{ "width": "40%", "targets": [0, 1] }
 			],
-			aaSorting: [],
+			"order": [],
 			rowReorder: {
 				selector: 'td:nth-child(2)'
 			},
@@ -91,10 +91,10 @@ function tableFromXML(data) {
 }
 
 function buildModal(name, address, description, users, country, shared, minshare, minslots, maxhubs, maxusers, reliability, rating, encoding, software, website, email, asn, operators, bots, infected, status, failover){
-	document.getElementById("hubModalName").innerText = 'Hub: ' + name;
-	document.getElementById("hubname").innerText = name;
+	document.getElementById("hubModalName").innerHTML = 'Hub: ' + decodeURIComponent(name);
+	document.getElementById("hubname").innerHTML = decodeURIComponent(name);
 	document.getElementById("hubaddress").innerText = address;
-	document.getElementById("hubdescription").innerText = he.decode(decodeURIComponent(description));
+	document.getElementById("hubdescription").innerHTML = decodeURIComponent(description);
 	document.getElementById("hubusers").innerText = users;
 	document.getElementById("hubcountry").innerText = country;
 	document.getElementById("hubshared").innerText = shared;
