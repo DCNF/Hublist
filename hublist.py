@@ -21,7 +21,7 @@ internet_hublists = [
     "http://www.te-home.net/?do=hublist&get=hublist.xml",
     "http://dchublist.org/hublist.xml.bz2",
     "https://dchublist.ru/hublist.xml.bz2",
-    #"http://hublist.eu/hublist.xml.bz2", # cloudflare
+    #"http://hublist.eu/hublist.xml.bz2", # cloudflare AND BAD KEYPRINT
     #"http://www.hublista.hu/hublist.xml.bz2", # too many timeout
     "http://dchublist.biz/?do=hublist.xml.bz2",
     "https://tankafett.biz/?do=hublist&get=hublist.xml.bz2",
