@@ -175,7 +175,7 @@ clean_hubs = []
 
 while len(hubs) != 0:
     hub = hubs[0]
-    isPublic = True
+    hubToKeep = True
 
     if len(sys.argv) >= 2:
         cmd = [sys.argv[1], 'ping', hub.attrib['Address'], '--out=xml-line', '--hubs=2', '--slots=6', '--share=324882100000']
@@ -188,14 +188,17 @@ while len(hubs) != 0:
         print(hub_response.attrib['Address'])
         if hub_response.attrib['Status'] == 'Error':
             if hub_response.attrib.get('ErrCode') == '226':
-                isPublic = False
+                hubToKeep = False
+            elif hub.attrib.get('Status') == 'Offline':
+                hubToKeep = False
             else:
+                hub.attrib['Status'] = 'Offline'
                 hub_response = hub
 
     else:
         hub_response = hub
 
-    if isPublic:
+    if hubToKeep:
         duplicata_hubs = [ h for h in hubs if (hub_addr_compare(h.attrib['Address'], hub_response.attrib['Address']) or hub_addr_compare(h.attrib['Address'], hub_response.attrib.get('Failover'))) ]
 
         for duplicata_hub in duplicata_hubs:
