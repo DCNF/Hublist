@@ -95,8 +95,41 @@ def hub_addr_compare(adrr_hub1, adrr_hub2):
         return False
     return True
 
+def duplicate_hub(hub1, hub2):
+
+    ## Check addr
+
+    # First check: normal address hub1
+    if hub_addr_compare(hub1.attrib['Address'], hub2.attrib['Address']):
+        return True
+    # Second check: failover address hub1
+    has_hub1_failover = (hub1.attrib.get('Failover') != None and hub1.attrib.get('Failover') != '')
+    if has_hub1_failover:
+        if hub_addr_compare(hub1.attrib['Failover'], hub2.attrib['Address']):
+            return True
+    # Third check: failover address hub2
+    if hub2.attrib.get('Failover') != None and hub2.attrib.get('Failover') != '':
+        if hub_addr_compare(hub2.attrib['Failover'], hub1.attrib['Address']):
+             return True
+        if has_hub1_failover and hub_addr_compare(hub2.attrib['Failover'], hub1.attrib['Failover']):
+            return True
+
+    ## Check status
+
+    if hub1.attrib.get('Status') != None and hub1.attrib.get('Status') != '' and hub2.attrib.get('Status') != None and hub2.attrib.get('Status') != '':
+        if hub1.attrib['Status'] != hub2.attrib['Status']:
+            return False
+
+    ## Check same element Name, Description and Encoding
+
+    if hub1.attrib.get('Name') != None and hub1.attrib.get('Name') != '' and hub2.attrib.get('Name') != None and hub2.attrib.get('Name') != '':
+        if hub1.attrib.get('Description') != None and hub1.attrib.get('Description') != '' and hub2.attrib.get('Description') != None and hub2.attrib.get('Description') != '':
+            if hub1.attrib.get('Encoding') != None and hub1.attrib.get('Encoding') != '' and hub2.attrib.get('Encoding') != None and hub2.attrib.get('Encoding') != '':
+                return (hub1.attrib['Name'] == hub2.attrib['Name']) and (hub1.attrib['Description'] == hub2.attrib['Description']) and (hub1.attrib['Encoding'] == hub2.attrib['Encoding'])
+
+    return False
+
 def priorize_hub(hub):
-    # yes, it's priorizing:
     # adcs with kp, adcs
     # then adc, dchubs / nmdcs
     # and then others
@@ -199,14 +232,14 @@ while len(hubs) != 0:
         hub_response = hub
 
     if hubToKeep:
-        duplicata_hubs = [ h for h in hubs if (hub_addr_compare(h.attrib['Address'], hub_response.attrib['Address']) or hub_addr_compare(h.attrib['Address'], hub_response.attrib.get('Failover'))) ]
+        duplicata_hubs = [ h for h in hubs if (duplicate_hub(h, hub_response)) ]
 
         for duplicata_hub in duplicata_hubs:
             hub_response = hub_merge(hub_response, duplicata_hub)
 
         clean_hubs.append(hub_response)
 
-    hubs = [ h for h in hubs if (not hub_addr_compare(h.attrib['Address'], hub_response.attrib['Address']) and not hub_addr_compare(h.attrib['Address'], hub_response.attrib.get('Failover'))) ]
+    hubs = [ h for h in hubs if (not duplicate_hub(h, hub_response)) ]
 
 # Prepare output file
 merge_root = ET.Element('Hublist', Name='The DCNF Hublist', Address='https://dcnf.github.io/Hublist/')
