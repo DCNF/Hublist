@@ -1,3 +1,4 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <Hubs>
+	<Hub Address="dchub://megahub.dchub.net:411" Encoding="CP1252" Name="inter" />
 </Hubs>
