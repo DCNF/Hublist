@@ -39,31 +39,30 @@ function tableFromXML(data) {
 		tab += '<td>' + data[i].getAttribute('Encoding') + '</td>';
 		tab += '<td data-order="' + data[i].getAttribute('Shared') + '">' + humanFileSize(data[i].getAttribute('Shared'), true) + '</td>';
 		tab += '<td>' + data[i].getAttribute('Users') + '</td>';
-		tab += '<td><button type="button" class="btn btn-link" data-toggle="modal" data-target="#hubModal" onclick="buildModal(\'' 
-		+ encodeURIComponent(he.encode(data[i].getAttribute('Name')))
-		+ '\',\'' + data[i].getAttribute('Address')
-		+ '\',\'' + encodeURIComponent(he.encode(data[i].getAttribute('Description')))
-		+ '\',\'' + data[i].getAttribute('Users')
-		+ '\',\'' + data[i].getAttribute('Country')
-		+ '\',\'' + humanFileSize(data[i].getAttribute('Shared'), true)
-		+ '\',\'' + humanFileSize(data[i].getAttribute('Minshare'), true)
-		+ '\',\'' + data[i].getAttribute('Minslots')
-		+ '\',\'' + data[i].getAttribute('Maxhubs')
-		+ '\',\'' + data[i].getAttribute('Maxusers')
-		+ '\',\'' + data[i].getAttribute('Reliability')
-		+ '\',\'' + data[i].getAttribute('Rating')
-		+ '\',\'' + data[i].getAttribute('Encoding')
-		+ '\',\'' + data[i].getAttribute('Software')
-		+ '\',\'' + data[i].getAttribute('Website')
-		+ '\',\'' + data[i].getAttribute('Email')
-		+ '\',\'' + data[i].getAttribute('ASN')
-		+ '\',\'' + data[i].getAttribute('Operators')
-		+ '\',\'' + data[i].getAttribute('Bots')
-		+ '\',\'' + data[i].getAttribute('Infected')
-		+ '\',\'' + data[i].getAttribute('Status')
-		+ '\',\'' + data[i].getAttribute('Failover')
-		+ '\');">';
-		tab += 'Hub details</button></td>';
+		tab += '<td><button type="button" class="btn btn-link" data-toggle="modal" data-target="#hubModal" '
+		tab += 'data-name="' + encodeURIComponent(he.encode(data[i].getAttribute('Name'))) + '" '
+		tab += 'data-address="' + data[i].getAttribute('Address') + '" '
+		tab += 'data-description="' + encodeURIComponent(he.encode(data[i].getAttribute('Description'))) + '" '
+		tab += 'data-users="' + data[i].getAttribute('Users') + '" '
+		tab += 'data-country="' + data[i].getAttribute('Country') + '" '
+		tab += 'data-shared="' + humanFileSize(data[i].getAttribute('Shared'), true) + '" '
+		tab += 'data-minshare="' + humanFileSize(data[i].getAttribute('Minshare'), true) + '" '
+		tab += 'data-minslots="' + data[i].getAttribute('Minslots') + '" '
+		tab += 'data-maxhubs="' + data[i].getAttribute('Maxhubs') + '" '
+		tab += 'data-maxusers="' + data[i].getAttribute('Maxusers') + '" '
+		tab += 'data-reliability="' + data[i].getAttribute('Reliability') + '" '
+		tab += 'data-rating="' + data[i].getAttribute('Rating') + '" '
+		tab += 'data-encoding="' + data[i].getAttribute('Encoding') + '" '
+		tab += 'data-software="' + data[i].getAttribute('Software') + '" '
+		tab += 'data-website="' + data[i].getAttribute('Website') + '" '
+		tab += 'data-email="' + data[i].getAttribute('Email') + '" '
+		tab += 'data-asn="' + data[i].getAttribute('ASN') + '" '
+		tab += 'data-operators="' + data[i].getAttribute('Operators') + '" '
+		tab += 'data-bots="' + data[i].getAttribute('Bots') + '" '
+		tab += 'data-infected="' + data[i].getAttribute('Infected') + '" '
+		tab += 'data-status="' + data[i].getAttribute('Status') + '" '
+		tab += 'data-failover="' + data[i].getAttribute('Failover') + '" '
+		tab += '>Hub details</button></td>';
 		tab += '</tr>';
 	}
 
@@ -87,33 +86,33 @@ function tableFromXML(data) {
 			},
 			responsive: true
 		});
+		$("#hubModal").on('show.bs.modal', function (event) {
+			var button = $(event.relatedTarget);
+			document.getElementById("hubModalName").innerHTML = 'Hub: ' + decodeURIComponent(button.data('name'));
+			document.getElementById("hubname").innerHTML = decodeURIComponent(button.data('name'));
+			document.getElementById("hubaddress").innerText = button.data('address');
+			document.getElementById("hubdescription").innerHTML = decodeURIComponent(button.data('description'));
+			document.getElementById("hubusers").innerText = button.data('users');
+			document.getElementById("hubcountry").innerText = button.data('country');
+			document.getElementById("hubshared").innerText = button.data('shared');
+			document.getElementById("hubminshare").innerText = button.data('minshare');
+			document.getElementById("hubminslots").innerText = button.data('minslots');
+			document.getElementById("hubmaxhubs").innerText = button.data('maxhubs');
+			document.getElementById("hubmaxusers").innerText = button.data('maxusers');
+			document.getElementById("hubreliability").innerText = button.data('reliability') + '%';
+			document.getElementById("hubrating").innerText = button.data('rating');
+			document.getElementById("hubencoding").innerText = button.data('encoding');
+			document.getElementById("hubsoftware").innerText = button.data('software');
+			document.getElementById("hubwebsite").innerText = button.data('website');
+			document.getElementById("hubemail").innerText = button.data('email');
+			document.getElementById("hubasn").innerText = button.data('asn');
+			document.getElementById("huboperators").innerText = button.data('operators');
+			document.getElementById("hubbots").innerText = button.data('bots');
+			document.getElementById("hubinfected").innerText = button.data('infected');
+			document.getElementById("hubstatus").innerHTML = '<span title=' + button.data('status') + '>' + (button.data('status') === "Online" ? "&#10004;" : "&#10060;") + '</span>';
+			document.getElementById("hubfailover").innerText = button.data('failover');
+		});
 	});
-}
-
-function buildModal(name, address, description, users, country, shared, minshare, minslots, maxhubs, maxusers, reliability, rating, encoding, software, website, email, asn, operators, bots, infected, status, failover){
-	document.getElementById("hubModalName").innerHTML = 'Hub: ' + decodeURIComponent(name);
-	document.getElementById("hubname").innerHTML = decodeURIComponent(name);
-	document.getElementById("hubaddress").innerText = address;
-	document.getElementById("hubdescription").innerHTML = decodeURIComponent(description);
-	document.getElementById("hubusers").innerText = users;
-	document.getElementById("hubcountry").innerText = country;
-	document.getElementById("hubshared").innerText = shared;
-	document.getElementById("hubminshare").innerText = minshare;
-	document.getElementById("hubminslots").innerText = minslots;
-	document.getElementById("hubmaxhubs").innerText = maxhubs;
-	document.getElementById("hubmaxusers").innerText = maxusers;
-	document.getElementById("hubreliability").innerText = reliability + '%';
-	document.getElementById("hubrating").innerText = rating;
-	document.getElementById("hubencoding").innerText = encoding;
-	document.getElementById("hubsoftware").innerText = software;
-	document.getElementById("hubwebsite").innerText = website;
-	document.getElementById("hubemail").innerText = email;
-	document.getElementById("hubasn").innerText = asn;
-	document.getElementById("huboperators").innerText = operators;
-	document.getElementById("hubbots").innerText = bots;
-	document.getElementById("hubinfected").innerText = infected;
-	document.getElementById("hubstatus").innerHTML = '<span title=' + status + '>' + (status === "Online" ? "&#10004;" : "&#10060;") + '</span>';
-	document.getElementById("hubfailover").innerText = failover;
 }
 
 // based on https://stackoverflow.com/a/14919494
