@@ -88,6 +88,17 @@ def indent(elem, level=0):
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
 
+def addr_complete(addr_hub):
+    # Add DCHUB protocol to url if no protocol is specified
+    if not urllib.parse.urlparse(addr_hub).scheme:
+        addr_hub = 'dchub://' + addr_hub
+
+    # Add NMDC optional port to url if no port is specified
+    if urllib.parse.urlparse(addr_hub).scheme == 'dchub' and not urllib.parse.urlparse(addr_hub).port:
+        addr_hub = addr_hub + ':411'
+
+    return addr_hub
+
 def hub_addr_compare(adrr_hub1, adrr_hub2):
     if urllib.parse.urlparse(adrr_hub1).hostname != urllib.parse.urlparse(adrr_hub2).hostname:
         return False
@@ -181,13 +192,11 @@ for xml_file in xml_files:
 
     for hub in root.iter('Hub'):
 
-        # Add DCHUB protocol to url if no protocol is specified
-        if not urllib.parse.urlparse(hub.attrib['Address']).scheme:
-            hub.attrib['Address'] = 'dchub://' + hub.attrib['Address']
+        hub.attrib['Address'] = addr_complete(hub.attrib['Address'])
 
-        # Add NMDC optional port to url if no port is specified
-        if urllib.parse.urlparse(hub.attrib['Address']).scheme == 'dchub' and not urllib.parse.urlparse(hub.attrib['Address']).port:
-            hub.attrib['Address'] = hub.attrib['Address'] + ':411'
+        # Same for failover
+        if hub.attrib.get('Failover') != None and hub.attrib.get('Failover') != '':
+            hub.attrib['Failover'] = addr_complete(hub.attrib['Failover'])
 
         # Delete if no Encoding is set
         if urllib.parse.urlparse(hub.attrib['Address']).scheme in ('dchub', 'dchubs', 'nmdc', 'nmdcs'):
@@ -218,7 +227,11 @@ while len(hubs) != 0:
 
         output = run(cmd, check=False, stdout=PIPE).stdout
         hub_response = ET.fromstring(output)
-        print(hub_response.attrib['Address'])
+
+        hub_response.attrib['Address'] = addr_complete(hub_response.attrib['Address'])
+
+        print('URL returned by the hub', hub.attrib['Address'], '~', hub_response.attrib['Address'])
+
         if hub_response.attrib['Status'] == 'Error':
             if hub_response.attrib.get('ErrCode') == '226':
                 hubToKeep = False
@@ -227,7 +240,6 @@ while len(hubs) != 0:
             else:
                 hub.attrib['Status'] = 'Offline'
                 hub_response = hub
-
     else:
         hub_response = hub
 
@@ -237,9 +249,19 @@ while len(hubs) != 0:
         for duplicata_hub in duplicata_hubs:
             hub_response = hub_merge(hub_response, duplicata_hub)
 
-        clean_hubs.append(hub_response)
-
     hubs = [ h for h in hubs if (not duplicate_hub(h, hub_response)) ]
+
+    # if URL is redirected, we removed the old URL in the list too
+    if hub.attrib['Address'] != hub_response.attrib['Address']:
+        hubs = [ h for h in hubs if (not duplicate_hub(h, hub)) ]
+
+        # we merge duplicate clean_hub
+        duplicata_clean_hubs = [ c for c in clean_hubs if (duplicate_hub(c, hub_response)) ]
+        for duplicata_clean_hub in duplicata_clean_hubs:
+            hub_response = hub_merge(hub_response, duplicata_clean_hub)
+        clean_hubs = [ c for c in clean_hubs if (not duplicate_hub(c, hub_response)) ]
+
+    clean_hubs.append(hub_response)
 
 # Prepare output file
 merge_root = ET.Element('Hublist', Name='The DCNF Hublist', Address='https://dcnf.github.io/Hublist/')
