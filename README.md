@@ -16,7 +16,7 @@ You can have a functionnal version by [building its source](https://github.com/d
 
 The pinger helps us having more accurate data of an hub.
 
-Version [v0.20.0](https://github.com/direct-connect/go-dcpp/tree/v0.20.0) of DCPing is compatible with this script.
+Version [v0.24.0](https://github.com/direct-connect/go-dcpp/tree/981f564c15445791fbe4671beb7d569a413a6674) of DCPing is compatible with this script.
 
 ```
 $ python3 hublist.py "[folder_to_dcping]/dcping"
