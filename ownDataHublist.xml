@@ -1,4 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <Hubs>
 	<Hub Address="dchub://megahub.dchub.net:411" Encoding="CP1252" Name="i.n.t.e.r.n.a.t.i.o.n.a.l®" Description="International DC++" />
+	<Hub Address="dchub://dchublist.biz:420" Encoding="CP1251" Name="Support Dchublist" Description="Support Dchublist.biz" />
+	<Hub Address="dchub://dc.tocitoxnetwork.net:411" Encoding="CP1252" Name="TociToxNetwork" Description=" Carefully handcrafted hub, in the memory of the good, old, gold DC++ days!" />
 </Hubs>
