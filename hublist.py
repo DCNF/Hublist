@@ -14,15 +14,14 @@ own_hublist = "https://dcnf.github.io/Hublist/ownDataHublist.xml"
 
 internet_hublists = [
     # list based on:
-    # - DC++: [dcpp/SettingsManager.cpp#l197](https://sourceforge.net/p/dcplusplus/code/ci/3c319cedf81ff67e1ac23785bde381e1104ef36c/tree/dcpp/SettingsManager.cpp#l197)
-    # - AirDC++: [airdcpp/airdcpp/SettingsManager.cpp#L339](https://github.com/airdcpp/airgit/blob/9954da1c62e2f379925569fdaebe2a125c86ec3f/airdcpp/airdcpp/SettingsManager.cpp#L339)
-    # - FlyLinkDC: [compiled/Settings/flylinkdc-config-r5xx.xml#L22](https://github.com/pavel-pimenov/flylinkdc-r5xx/blob/24db5c7582a22a00aa132b6a5b8eab57ba9dbdaf/compiled/Settings/flylinkdc-config-r5xx.xml#L22)
-    # - EiskaltDC++: [dcpp/SettingsManager.cpp#L165](https://github.com/eiskaltdcpp/eiskaltdcpp/blob/2b38b58eed1547f1a6769d8c7c3a7039dda54c39/dcpp/SettingsManager.cpp#L165)
+    # - DC++: [dcpp/SettingsManager.cpp#l197](https://sourceforge.net/p/dcplusplus/code/ci/91bc96e9055a202a180f66e52fdb49f1667a15d0/tree/dcpp/SettingsManager.cpp#l197)
+    # - AirDC++: [airdcpp/airdcpp/SettingsManager.cpp#L339](https://github.com/airdcpp/airgit/blob/738f40f862061465e7c329d35c7afb7708f655f1/airdcpp/airdcpp/SettingsManager.cpp#L339)
+    # - FlyLinkDC: [compiled/Settings/flylinkdc-config-r5xx.xml#L22](https://github.com/pavel-pimenov/flylinkdc-r5xx/blob/c79e50e12016421a842954ab10cdccb2a2f624b8/compiled/Settings/flylinkdc-config-r5xx.xml#L22)
+    # - EiskaltDC++: [dcpp/SettingsManager.cpp#L165](https://github.com/eiskaltdcpp/eiskaltdcpp/blob/89348ec73bd59ba91abbddaf69390d219dcb8cb3/dcpp/SettingsManager.cpp#L165)
     "http://www.te-home.net/?do=hublist&get=hublist.xml",
     "http://dchublist.org/hublist.xml.bz2",
     "https://dchublist.ru/hublist.xml.bz2",
     #"http://hublist.eu/hublist.xml.bz2", # cloudflare AND BAD KEYPRINT
-    #"http://www.hublista.hu/hublist.xml.bz2", # too many timeout
     "http://dchublist.biz/?do=hublist.xml.bz2",
     "https://tankafett.biz/?do=hublist&get=hublist.xml.bz2",
     "https://dcnf.github.io/Hublist/hublist.xml.bz2", # a backup
