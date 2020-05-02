@@ -1,3 +1,11 @@
 .Online {
 	color: green;
 }
+
+.modal-content {
+	overflow-x: auto;
+}
+
+.padding-modal {
+	padding: .15rem;
+}
