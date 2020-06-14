@@ -260,7 +260,8 @@ while len(hubs) != 0:
             hub_response = hub_merge(hub_response, duplicata_clean_hub)
         clean_hubs = [ c for c in clean_hubs if (not duplicate_hub(c, hub_response)) ]
 
-    clean_hubs.append(hub_response)
+    if hubToKeep:
+        clean_hubs.append(hub_response)
 
 # Prepare output file
 merge_root = ET.Element('Hublist', Name='The DCNF Hublist', Address='https://dcnf.github.io/Hublist/')
