@@ -14,16 +14,15 @@ own_hublist = "https://dcnf.github.io/Hublist/ownDataHublist.xml"
 
 internet_hublists = [
     # list based on:
-    # - DC++: [dcpp/SettingsManager.cpp#l197](https://sourceforge.net/p/dcplusplus/code/ci/91bc96e9055a202a180f66e52fdb49f1667a15d0/tree/dcpp/SettingsManager.cpp#l197)
-    # - AirDC++: [airdcpp/airdcpp/SettingsManager.cpp#L339](https://github.com/airdcpp/airgit/blob/738f40f862061465e7c329d35c7afb7708f655f1/airdcpp/airdcpp/SettingsManager.cpp#L339)
-    # - FlyLinkDC: [compiled/Settings/flylinkdc-config-r5xx.xml#L22](https://github.com/pavel-pimenov/flylinkdc-r5xx/blob/c79e50e12016421a842954ab10cdccb2a2f624b8/compiled/Settings/flylinkdc-config-r5xx.xml#L22)
-    # - EiskaltDC++: [dcpp/SettingsManager.cpp#L165](https://github.com/eiskaltdcpp/eiskaltdcpp/blob/89348ec73bd59ba91abbddaf69390d219dcb8cb3/dcpp/SettingsManager.cpp#L165)
+    # - DC++: [dcpp/SettingsManager.cpp#l197](https://sourceforge.net/p/dcplusplus/code/ci/35ca01cebee32a78b40a1511f6e8561d38c4282b/tree/dcpp/SettingsManager.cpp#l197)
+    # - AirDC++: [airdcpp/airdcpp/SettingsManager.cpp#L427](https://github.com/airdcpp/airgit/blob/c737e360a57c3287c16fe8c241e77c60808012aa/airdcpp/airdcpp/SettingsManager.cpp#L427)
+    # - FlyLinkDC: [compiled/Settings/flylinkdc-config-r6xx.xml#L19](https://github.com/pavel-pimenov/flylinkdc-r6xx/blob/440b70e99a2aaa3fd2bbf15164eb46deb609412b/compiled/Settings/flylinkdc-config-r6xx.xml#L19)
+    # - EiskaltDC++: [dcpp/SettingsManager.cpp#L165](https://github.com/eiskaltdcpp/eiskaltdcpp/blob/0e0ccde5fa6512faf8ebb7bd7376b3921aa8f807/dcpp/SettingsManager.cpp#L165)
     "http://www.te-home.net/?do=hublist&get=hublist.xml",
     "http://dchublist.org/hublist.xml.bz2",
     "https://dchublist.ru/hublist.xml.bz2",
-    #"http://hublist.eu/hublist.xml.bz2", # cloudflare AND BAD KEYPRINT
-    "http://dchublist.biz/?do=hublist.xml.bz2",
     "https://tankafett.biz/?do=hublist&get=hublist.xml.bz2",
+    "http://dchublist.biz/?do=hublist.xml.bz2",
     "https://dcnf.github.io/Hublist/hublist.xml.bz2", # a backup
 ]
 
