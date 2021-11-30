@@ -33,7 +33,7 @@ $ python3 hublist.py
 - DC++: [dcpp/FavoriteManager.cpp#l322](https://sourceforge.net/p/dcplusplus/code/ci/66549d/tree/dcpp/FavoriteManager.cpp#l322)
 - AirDC++: [modules/HublistManager.cpp#L58](https://github.com/airdcpp/airdcpp-windows/blob/c8e3dc4/airdcpp/airdcpp/modules/HublistManager.cpp#L58)
 - EiskaltDC++: [dcpp/FavoriteManager.cpp#L255](https://github.com/eiskaltdcpp/eiskaltdcpp/blob/1d113ac/dcpp/FavoriteManager.cpp#L255)
-- FlyLinkDC: [windows/PublicHubsFrm.cpp#L53](https://github.com/pavel-pimenov/flylinkdc-r6xx/blob/92da92a/windows/PublicHubsFrm.cpp)
+- FlyLinkDC: [windows/PublicHubsFrm.cpp#L53](https://github.com/pavel-pimenov/flylinkdc-r6xx/blob/92da92a/windows/PublicHubsFrm.cpp#L53)
 
 ## Why some hubs are offline, and written on your hublist as online?
 
