@@ -31,9 +31,10 @@ local_hublists = [
 
 # timeout in seconds
 timeout = 10
-socket.setdefaulttimeout(timeout)
 
 ##### END OF THE CONFIGURATION #####
+
+socket.setdefaulttimeout(timeout)
 
 # List of attributes, in the form (attribute name, type)
 attributes = (
