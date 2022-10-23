@@ -14,13 +14,14 @@ own_hublist = "https://dcnf.github.io/Hublist/ownDataHublist.xml"
 
 internet_hublists = [
     # list based on:
-    # - DC++: [dcpp/SettingsManager.cpp#l197](https://sourceforge.net/p/dcplusplus/code/ci/66549dcdcb1e12750be91ad361b4f3fa00ab67d8/tree/dcpp/SettingsManager.cpp#l197)
-    # - AirDC++: [airdcpp/airdcpp/SettingsManager.cpp#L427](https://github.com/airdcpp/airdcpp-windows/blob/b863d8626d95d0ee483572a5139f8f569b558c3f/airdcpp/airdcpp/SettingsManager.cpp#L427)
-    # - FlyLinkDC: [compiled/Settings/flylinkdc-config-r6xx.xml#L19](https://github.com/pavel-pimenov/flylinkdc-r6xx/blob/7fb959fe864198e9d50270b12ec37c29011d364e/compiled/Settings/flylinkdc-config-r6xx.xml#L19)
-    # - EiskaltDC++: [dcpp/SettingsManager.cpp#L165](https://github.com/eiskaltdcpp/eiskaltdcpp/blob/390374214032dd537943a589ce38aaf46fe20da6/dcpp/SettingsManager.cpp#L165)
-    "http://www.te-home.net/?do=hublist&get=hublist.xml",
-    "http://dchublist.org/hublist.xml.bz2",
+    # - DC++: [dcpp/SettingsManager.cpp#l197](https://sourceforge.net/p/dcplusplus/code/ci/eb139c8d81a96ed6627b6fda8c94ffb325a0a308/tree/dcpp/SettingsManager.cpp#l197)
+    # - AirDC++: [airdcpp/airdcpp/SettingsManager.cpp#L426](https://github.com/airdcpp/airdcpp-windows/blob/8c359424d883ba836b344383c862ba0b386fc30b/airdcpp/airdcpp/SettingsManager.cpp#L426)
+    # - FlyLinkDC: [compiled/Settings/flylinkdc-config-r6xx.xml#L19](https://github.com/pavel-pimenov/flylinkdc-r6xx/blob/094f312eb07718f1583a7e08da4abe4557d01835/compiled/Settings/flylinkdc-config-r6xx.xml#L19)
+    # - EiskaltDC++: [dcpp/SettingsManager.cpp#L165](https://github.com/eiskaltdcpp/eiskaltdcpp/blob/9b65fdd4f51b93a90a63ac84d638b7ff1f79771d/dcpp/SettingsManager.cpp#L165)
+    "https://www.te-home.net/?do=hublist&get=hublist.xml",
+    "https://dchublist.org/hublist.xml.bz2",
     "https://dchublist.ru/hublist.xml.bz2",
+    "https://hublist.pwiam.com/hublist.xml",
     "http://dchublist.biz/?do=hublist.xml.bz2",
     "https://dcnf.github.io/Hublist/hublist.xml.bz2", # a backup
 ]
