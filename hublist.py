@@ -107,36 +107,47 @@ def hub_addr_compare(adrr_hub1, adrr_hub2):
 
 def duplicate_hub(hub1, hub2):
 
-    ## Check addr
+    # CHECH ADDR
 
-    # First check: normal address hub1
+    ## First check: normal address hub1
     if hub_addr_compare(hub1.attrib['Address'], hub2.attrib['Address']):
         return True
-    # Second check: failover address hub1
+
+    
     has_hub1_failover = (hub1.attrib.get('Failover') != None and hub1.attrib.get('Failover') != '')
+    has_hub2_failover = (hub2.attrib.get('Failover') != None and hub2.attrib.get('Failover') != '')
+
+    ## Second check: failover address hub1
     if has_hub1_failover:
         if hub_addr_compare(hub1.attrib['Failover'], hub2.attrib['Address']):
             return True
-    # Third check: failover address hub2
-    if hub2.attrib.get('Failover') != None and hub2.attrib.get('Failover') != '':
+
+    ## Third check: failover address hub2
+    if has_hub2_failover:
         if hub_addr_compare(hub2.attrib['Failover'], hub1.attrib['Address']):
-             return True
-        if has_hub1_failover and hub_addr_compare(hub2.attrib['Failover'], hub1.attrib['Failover']):
             return True
 
-    ## Check status
+    ## Fourth check: failover address hub
+    if has_hub1_failover and has_hub2_failover:
+        if hub_addr_compare(hub1.attrib['Failover'], hub2.attrib['Failover']):
+            return True
+
+    # CHECK STATUS
 
     if hub1.attrib.get('Status') != None and hub1.attrib.get('Status') != '' and hub2.attrib.get('Status') != None and hub2.attrib.get('Status') != '':
         if hub1.attrib['Status'] != hub2.attrib['Status']:
             return False
 
-    ## Check same element Name, Description and Encoding
+    # CHECK SAME ELEMENT NAME,
+    # DESCRIPTION
+    # AND ENCODING
 
     if hub1.attrib.get('Name') != None and hub1.attrib.get('Name') != '' and hub2.attrib.get('Name') != None and hub2.attrib.get('Name') != '':
         if hub1.attrib.get('Description') != None and hub1.attrib.get('Description') != '' and hub2.attrib.get('Description') != None and hub2.attrib.get('Description') != '':
             if hub1.attrib.get('Encoding') != None and hub1.attrib.get('Encoding') != '' and hub2.attrib.get('Encoding') != None and hub2.attrib.get('Encoding') != '':
                 return (hub1.attrib['Name'] == hub2.attrib['Name']) and (hub1.attrib['Description'] == hub2.attrib['Description']) and (hub1.attrib['Encoding'] == hub2.attrib['Encoding'])
 
+    print("false")
     return False
 
 def priorize_hub(hub):
@@ -184,81 +195,75 @@ for local_hublist in local_hublists:
     xml_files.append(ET.tostring(root).decode())
 
 # Parsing XML files
-hubs = []
+hubs_from_xml = []
 
 for xml_file in xml_files:
     root = ET.fromstring(xml_file)
 
-    for hub in root.iter('Hub'):
+    for hub_element in root.iter('Hub'):
 
-        hub.attrib['Address'] = addr_complete(hub.attrib['Address'])
+        hub_element.attrib['Address'] = addr_complete(hub_element.attrib['Address'])
 
         # Same for failover
-        if hub.attrib.get('Failover') != None and hub.attrib.get('Failover') != '':
-            hub.attrib['Failover'] = addr_complete(hub.attrib['Failover'])
+        if hub_element.attrib.get('Failover') != None and hub_element.attrib.get('Failover') != '':
+            hub_element.attrib['Failover'] = addr_complete(hub_element.attrib['Failover'])
 
         # Delete if no Encoding is set
-        if urllib.parse.urlparse(hub.attrib['Address']).scheme in ('dchub', 'dchubs', 'nmdc', 'nmdcs'):
-            if hub.attrib.get('Encoding') != None and hub.attrib.get('Encoding') != '':
-                if hub.attrib['Encoding'].lower() in supported_encoding:
-                    hubs.append(hub)
+        if urllib.parse.urlparse(hub_element.attrib['Address']).scheme in ('dchub', 'dchubs', 'nmdc', 'nmdcs'):
+            if hub_element.attrib.get('Encoding') != None and hub_element.attrib.get('Encoding') != '':
+                if hub_element.attrib['Encoding'].lower() in supported_encoding:
+                    hubs_from_xml.append(hub_element)
                 else:
-                    print('Unknown encoding:', hub.attrib.get('Encoding'), hub.attrib['Address'])
-        elif urllib.parse.urlparse(hub.attrib['Address']).scheme in ('adc', 'adcs'):
-            hub.attrib['Encoding'] = 'UTF-8'
-            hubs.append(hub)
+                    print('Unknown encoding:', hub_element.attrib.get('Encoding'), hub_element.attrib['Address'])
+        elif urllib.parse.urlparse(hub_element.attrib['Address']).scheme in ('adc', 'adcs'):
+            hub_element.attrib['Encoding'] = 'UTF-8'
+            hubs_from_xml.append(hub_element)
         else:
-            print('Unknown scheme:', urllib.parse.urlparse(hub.attrib['Address']).scheme, hub.attrib['Address'])
+            print('Unknown scheme:', urllib.parse.urlparse(hub_element.attrib['Address']).scheme, hub_element.attrib['Address'])
 
-hubs.sort(key=priorize_hub)
+hubs_from_xml.sort(key=priorize_hub)
 
 clean_hubs = []
 
-while len(hubs) != 0:
-    hub = hubs[0]
+while len(hubs_from_xml) != 0:
+    hub_from_xml = hubs_from_xml[0]
+
     hubToKeep = True
 
     if len(sys.argv) >= 2:
-        cmd = [sys.argv[1], 'ping', hub.attrib['Address'], '--out=xml-line', '--hubs=2', '--slots=6', '--share=324882100000']
+        cmd = [sys.argv[1], 'ping', hub_from_xml.attrib['Address'], '--out=xml-line', '--hubs=2', '--slots=6', '--share=324882100000']
 
-        if urllib.parse.urlparse(hub.attrib['Address']).scheme in ('dchub', 'dchubs', 'nmdc', 'nmdcs'):
-            cmd.append('--encoding=' + hub.attrib['Encoding'])
+        if urllib.parse.urlparse(hub_from_xml.attrib['Address']).scheme in ('dchub', 'dchubs', 'nmdc', 'nmdcs'):
+            cmd.append('--encoding=' + hub_from_xml.attrib['Encoding'])
 
         output = run(cmd, check=False, stdout=PIPE).stdout
         hub_response = ET.fromstring(output)
 
         hub_response.attrib['Address'] = addr_complete(hub_response.attrib['Address'])
 
-        print('URL returned by the hub', hub.attrib['Address'], '~', hub_response.attrib['Address'])
+        print('URL returned by the hub', hub_from_xml.attrib['Address'], '~', hub_response.attrib['Address'])
 
         if hub_response.attrib['Status'] == 'Error':
             if hub_response.attrib.get('ErrCode') == '226':
                 hubToKeep = False
-            elif hub.attrib.get('Status') == 'Offline':
+            elif hub_response.attrib.get('Status') == 'Offline':
                 hubToKeep = False
             else:
-                hub.attrib['Status'] = 'Offline'
-                hub_response = hub
+                hub_from_xml.attrib['Status'] = 'Offline'
+                hub_response = hub_from_xml
     else:
-        hub_response = hub
+        hub_response = hub_from_xml
 
-    if hubToKeep:
-        duplicata_hubs = [ h for h in hubs if (duplicate_hub(h, hub_response)) ]
-
-        for duplicata_hub in duplicata_hubs:
+    for duplicata_hub in list(hubs_from_xml):
+        if (duplicate_hub(duplicata_hub, hub_response)):
             hub_response = hub_merge(hub_response, duplicata_hub)
-
-    hubs = [ h for h in hubs if (not duplicate_hub(h, hub_response)) ]
+            hubs_from_xml.remove(duplicata_hub)
 
     # if URL is redirected, we removed the old URL in the list too
-    if hub.attrib['Address'] != hub_response.attrib['Address']:
-        hubs = [ h for h in hubs if (not duplicate_hub(h, hub)) ]
-
-        # we merge duplicate clean_hub
-        duplicata_clean_hubs = [ c for c in clean_hubs if (duplicate_hub(c, hub_response)) ]
-        for duplicata_clean_hub in duplicata_clean_hubs:
-            hub_response = hub_merge(hub_response, duplicata_clean_hub)
-        clean_hubs = [ c for c in clean_hubs if (not duplicate_hub(c, hub_response)) ]
+    if hub_from_xml.attrib['Address'] != hub_response.attrib['Address']:
+        for duplicata_hub in list(hubs_from_xml):
+            if (duplicate_hub(duplicata_hub, hub_from_xml)):
+                hubs_from_xml.remove(duplicata_hub)
 
     if hubToKeep:
         clean_hubs.append(hub_response)
