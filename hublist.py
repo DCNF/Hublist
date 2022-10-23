@@ -147,7 +147,6 @@ def duplicate_hub(hub1, hub2):
             if hub1.attrib.get('Encoding') != None and hub1.attrib.get('Encoding') != '' and hub2.attrib.get('Encoding') != None and hub2.attrib.get('Encoding') != '':
                 return (hub1.attrib['Name'] == hub2.attrib['Name']) and (hub1.attrib['Description'] == hub2.attrib['Description']) and (hub1.attrib['Encoding'] == hub2.attrib['Encoding'])
 
-    print("false")
     return False
 
 def priorize_hub(hub):
