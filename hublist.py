@@ -71,6 +71,24 @@ attributes = (
 # Supported NMDC Encoding (should be in lower)
 supported_encoding = ['utf-8', 'cp1250', 'cp1251', 'cp1252', 'cp1253', 'cp1254', 'cp1256', 'cp1257','gb18030']
 
+# Suported chemas of NMDC protocol
+supported_schemas_dc = ['dchub', 'dchubs', 'nmdc', 'nmdcs']
+
+# Suported chemas of Secure NMDC protocol
+supported_schemas_dc_secure = ['dchubs', 'nmdcs']
+
+# Suported chemas of unsecure NMDC protocol
+supported_schemas_dc_unsecure = ['dchub', 'nmdc']
+
+# Suported chemas of ADC protocol
+supported_schemas_adc = ['adc', 'adcs']
+
+# Suported chemas of Secure ADC protocol
+supported_schemas_adc_secure = ['adcs']
+
+# Suported chemas of unsecure ADC protocol
+supported_schemas_adc_unsecure = ['adc']
+
 # in-place prettyprint formatter from http://effbot.org/zone/element-lib.htm#prettyprint
 def indent(elem, level=0):
     i = "\n" + level*"  "
@@ -88,12 +106,14 @@ def indent(elem, level=0):
             elem.tail = i
 
 def addr_complete(addr_hub):
+    url_info = urllib.parse.urlparse(addr_hub)
+
     # Add DCHUB protocol to url if no protocol is specified
-    if not urllib.parse.urlparse(addr_hub).scheme:
+    if not url_info.scheme:
         addr_hub = 'dchub://' + addr_hub
 
     # Add NMDC optional port to url if no port is specified
-    if urllib.parse.urlparse(addr_hub).scheme == 'dchub' and not urllib.parse.urlparse(addr_hub).port:
+    if url_info.scheme == 'dchub' and not url_info.port:
         addr_hub = addr_hub + ':411'
 
     return addr_hub
@@ -107,13 +127,12 @@ def hub_addr_compare(adrr_hub1, adrr_hub2):
 
 def duplicate_hub(hub1, hub2):
 
-    # CHECH ADDR
+    # CHECK ADDR
 
     ## First check: normal address hub1
     if hub_addr_compare(hub1.attrib['Address'], hub2.attrib['Address']):
         return True
 
-    
     has_hub1_failover = (hub1.attrib.get('Failover') != None and hub1.attrib.get('Failover') != '')
     has_hub2_failover = (hub2.attrib.get('Failover') != None and hub2.attrib.get('Failover') != '')
 
@@ -150,20 +169,26 @@ def duplicate_hub(hub1, hub2):
     return False
 
 def priorize_hub(hub):
-    # adcs with kp, adcs
-    # then adc, dchubs / nmdcs
-    # and then others
-    if urllib.parse.urlparse(hub.attrib['Address']).scheme == 'adcs':
+    # Priority:
+    # - ADCS with key
+    # - ADCS
+    # - ADC
+    # - DCHUBS / NMDCS
+    # - DCHUB / NMDC
+    # - are there any others?
+    if urllib.parse.urlparse(hub.attrib['Address']).scheme in supported_schemas_adc_secure:
         if urllib.parse.urlparse(hub.attrib['Address']).query.startswith('kp='):
             return 1
         else:
             return 2
-    elif urllib.parse.urlparse(hub.attrib['Address']).scheme == 'adc':
+    elif urllib.parse.urlparse(hub.attrib['Address']).scheme in supported_schemas_adc_unsecure:
         return 3
-    elif urllib.parse.urlparse(hub.attrib['Address']).scheme in ('nmdcs', 'dchubs'):
+    elif urllib.parse.urlparse(hub.attrib['Address']).scheme in supported_schemas_dc_secure:
         return 4
-    else:
+    elif urllib.parse.urlparse(hub.attrib['Address']).scheme in supported_schemas_dc_unsecure:
         return 5
+    else:
+        return 6
 
 def hub_merge(hub1, hub2):
     # Set attributes with no value in hub1 from value in hub2
@@ -171,6 +196,7 @@ def hub_merge(hub1, hub2):
         if att in hub2.attrib:
             if (hub1.attrib.get(att) == None or hub1.attrib.get(att) == '') and hub2.attrib.get(att) != None and hub2.attrib.get(att) != '':
                 hub1.attrib[att] = hub2.attrib[att]
+
     return hub1
 
 xml_files = []
@@ -208,7 +234,7 @@ for xml_file in xml_files:
             hub_element.attrib['Failover'] = addr_complete(hub_element.attrib['Failover'])
 
         # Delete if no Encoding is set
-        if urllib.parse.urlparse(hub_element.attrib['Address']).scheme in ('dchub', 'dchubs', 'nmdc', 'nmdcs'):
+        if urllib.parse.urlparse(hub_element.attrib['Address']).scheme in supported_schemas_dc:
             if hub_element.attrib.get('Encoding') != None and hub_element.attrib.get('Encoding') != '':
                 if hub_element.attrib['Encoding'].lower() in supported_encoding:
                     hubs_from_xml.append(hub_element)
@@ -232,7 +258,7 @@ while len(hubs_from_xml) != 0:
     if len(sys.argv) >= 2:
         cmd = [sys.argv[1], 'ping', hub_from_xml.attrib['Address'], '--out=xml-line', '--hubs=2', '--slots=6', '--share=324882100000']
 
-        if urllib.parse.urlparse(hub_from_xml.attrib['Address']).scheme in ('dchub', 'dchubs', 'nmdc', 'nmdcs'):
+        if urllib.parse.urlparse(hub_from_xml.attrib['Address']).scheme in supported_schemas_dc:
             cmd.append('--encoding=' + hub_from_xml.attrib['Encoding'])
 
         output = run(cmd, check=False, stdout=PIPE).stdout
@@ -258,7 +284,7 @@ while len(hubs_from_xml) != 0:
             hub_response = hub_merge(hub_response, duplicata_hub)
             hubs_from_xml.remove(duplicata_hub)
 
-    # if URL is redirected, we removed the old URL in the list too
+    # if URL is redirected, we also removed the old URL from the list too
     if hub_from_xml.attrib['Address'] != hub_response.attrib['Address']:
         for duplicata_hub in list(hubs_from_xml):
             if (duplicate_hub(duplicata_hub, hub_from_xml)):
@@ -268,7 +294,7 @@ while len(hubs_from_xml) != 0:
         clean_hubs.append(hub_response)
 
 # Prepare output file
-merge_root = ET.Element('Hublist', Name='The DCNF Hublist', Address='https://dcnf.github.io/Hublist/')
+merge_root = ET.Element('Hublist', Name='The DCNF Hublist', Address='https://dcnf.github.io/Hublist')
 merge_hubs = ET.SubElement(merge_root, 'Hubs')
 merge_cols = ET.SubElement(merge_hubs, 'Columns')
 
