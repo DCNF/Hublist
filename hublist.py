@@ -294,7 +294,7 @@ while len(hubs_from_xml) != 0:
         clean_hubs.append(hub_response)
 
 # Prepare output file
-merge_root = ET.Element('Hublist', Name='The DCNF Hublist', Address='https://dcnf.github.io/Hublist')
+merge_root = ET.Element('Hublist', Name='The DCNF Hublist', Address='https://dcnf.github.io/Hublist/')
 merge_hubs = ET.SubElement(merge_root, 'Hubs')
 merge_cols = ET.SubElement(merge_hubs, 'Columns')
 
