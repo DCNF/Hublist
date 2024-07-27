@@ -4,8 +4,10 @@
 import bz2
 import socket
 import sys
-import urllib, urllib.request, urllib.parse
-import xml.etree.cElementTree as ET
+import urllib
+import urllib.request
+import urllib.parse
+import xml.etree.ElementTree as ET
 from subprocess import run, PIPE
 
 ##### CAN BE CONFIGURED #####
@@ -31,11 +33,11 @@ local_hublists = [
 ]
 
 # timeout in seconds
-timeout = 10
+TIMEOUT = 10
 
 ##### END OF THE CONFIGURATION #####
 
-socket.setdefaulttimeout(timeout)
+socket.setdefaulttimeout(TIMEOUT)
 
 # List of attributes, in the form (attribute name, type)
 attributes = (
@@ -133,8 +135,8 @@ def duplicate_hub(hub1, hub2):
     if hub_addr_compare(hub1.attrib['Address'], hub2.attrib['Address']):
         return True
 
-    has_hub1_failover = (hub1.attrib.get('Failover') != None and hub1.attrib.get('Failover') != '')
-    has_hub2_failover = (hub2.attrib.get('Failover') != None and hub2.attrib.get('Failover') != '')
+    has_hub1_failover = (hub1.attrib.get('Failover') is not None and hub1.attrib.get('Failover') != '')
+    has_hub2_failover = (hub2.attrib.get('Failover') is not None and hub2.attrib.get('Failover') != '')
 
     ## Second check: failover address hub1
     if has_hub1_failover:
@@ -153,7 +155,7 @@ def duplicate_hub(hub1, hub2):
 
     # CHECK STATUS
 
-    if hub1.attrib.get('Status') != None and hub1.attrib.get('Status') != '' and hub2.attrib.get('Status') != None and hub2.attrib.get('Status') != '':
+    if hub1.attrib.get('Status') is not None and hub1.attrib.get('Status') != '' and hub2.attrib.get('Status') is not None and hub2.attrib.get('Status') != '':
         if hub1.attrib['Status'] != hub2.attrib['Status']:
             return False
 
@@ -161,11 +163,10 @@ def duplicate_hub(hub1, hub2):
     # DESCRIPTION
     # AND ENCODING
 
-    if hub1.attrib.get('Name') != None and hub1.attrib.get('Name') != '' and hub2.attrib.get('Name') != None and hub2.attrib.get('Name') != '':
-        if hub1.attrib.get('Description') != None and hub1.attrib.get('Description') != '' and hub2.attrib.get('Description') != None and hub2.attrib.get('Description') != '':
-            if hub1.attrib.get('Encoding') != None and hub1.attrib.get('Encoding') != '' and hub2.attrib.get('Encoding') != None and hub2.attrib.get('Encoding') != '':
+    if hub1.attrib.get('Name') is not None and hub1.attrib.get('Name') != '' and hub2.attrib.get('Name') is not None and hub2.attrib.get('Name') != '':
+        if hub1.attrib.get('Description') is not None and hub1.attrib.get('Description') != '' and hub2.attrib.get('Description') is not None and hub2.attrib.get('Description') != '':
+            if hub1.attrib.get('Encoding') is not None and hub1.attrib.get('Encoding') != '' and hub2.attrib.get('Encoding') is not None and hub2.attrib.get('Encoding') != '':
                 return (hub1.attrib['Name'] == hub2.attrib['Name']) and (hub1.attrib['Description'] == hub2.attrib['Description']) and (hub1.attrib['Encoding'] == hub2.attrib['Encoding'])
-
     return False
 
 def priorize_hub(hub):
@@ -179,22 +180,20 @@ def priorize_hub(hub):
     if urllib.parse.urlparse(hub.attrib['Address']).scheme in supported_schemas_adc_secure:
         if urllib.parse.urlparse(hub.attrib['Address']).query.startswith('kp='):
             return 1
-        else:
-            return 2
+        return 2
     elif urllib.parse.urlparse(hub.attrib['Address']).scheme in supported_schemas_adc_unsecure:
         return 3
     elif urllib.parse.urlparse(hub.attrib['Address']).scheme in supported_schemas_dc_secure:
         return 4
     elif urllib.parse.urlparse(hub.attrib['Address']).scheme in supported_schemas_dc_unsecure:
         return 5
-    else:
-        return 6
+    return 6
 
 def hub_merge(hub1, hub2):
     # Set attributes with no value in hub1 from value in hub2
     for att, _ in attributes:
         if att in hub2.attrib:
-            if (hub1.attrib.get(att) == None or hub1.attrib.get(att) == '') and hub2.attrib.get(att) != None and hub2.attrib.get(att) != '':
+            if (hub1.attrib.get(att) is None or hub1.attrib.get(att) == '') and hub2.attrib.get(att) is not None and hub2.attrib.get(att) != '':
                 hub1.attrib[att] = hub2.attrib[att]
 
     return hub1
@@ -230,12 +229,12 @@ for xml_file in xml_files:
         hub_element.attrib['Address'] = addr_complete(hub_element.attrib['Address'])
 
         # Same for failover
-        if hub_element.attrib.get('Failover') != None and hub_element.attrib.get('Failover') != '':
+        if hub_element.attrib.get('Failover') is not None and hub_element.attrib.get('Failover') != '':
             hub_element.attrib['Failover'] = addr_complete(hub_element.attrib['Failover'])
 
         # Delete if no Encoding is set
         if urllib.parse.urlparse(hub_element.attrib['Address']).scheme in supported_schemas_dc:
-            if hub_element.attrib.get('Encoding') != None and hub_element.attrib.get('Encoding') != '':
+            if hub_element.attrib.get('Encoding') is not None and hub_element.attrib.get('Encoding') != '':
                 if hub_element.attrib['Encoding'].lower() in supported_encoding:
                     hubs_from_xml.append(hub_element)
                 else:
@@ -253,7 +252,7 @@ clean_hubs = []
 while len(hubs_from_xml) != 0:
     hub_from_xml = hubs_from_xml[0]
 
-    hubToKeep = True
+    HUB_TO_KEEP = True
 
     if len(sys.argv) >= 2:
         cmd = [sys.argv[1], 'ping', hub_from_xml.attrib['Address'], '--out=xml-line', '--hubs=2', '--slots=6', '--share=324882100000']
@@ -270,9 +269,9 @@ while len(hubs_from_xml) != 0:
 
         if hub_response.attrib['Status'] == 'Error':
             if hub_response.attrib.get('ErrCode') == '226':
-                hubToKeep = False
+                HUB_TO_KEEP = False
             elif hub_response.attrib.get('Status') == 'Offline':
-                hubToKeep = False
+                HUB_TO_KEEP = False
             else:
                 hub_from_xml.attrib['Status'] = 'Offline'
                 hub_response = hub_from_xml
@@ -290,7 +289,7 @@ while len(hubs_from_xml) != 0:
             if (duplicate_hub(duplicata_hub, hub_from_xml)):
                 hubs_from_xml.remove(duplicata_hub)
 
-    if hubToKeep:
+    if HUB_TO_KEEP:
         clean_hubs.append(hub_response)
 
 # Prepare output file
@@ -306,7 +305,7 @@ for name, type_ in attributes:
 for hub_add in clean_hubs:
     attribs = {}
     for name, _ in attributes:
-        if name in hub_add.attrib and hub_add.attrib.get(name) != None:
+        if name in hub_add.attrib and hub_add.attrib.get(name) is not None:
             attribs[name] = hub_add.attrib.get(name)
         else:
             # Inserting no value
@@ -319,6 +318,5 @@ merge_tree.write('hublist.xml', encoding='UTF-8', xml_declaration=True)
 
 # bz2
 tarbz2contents = bz2.compress(open('hublist.xml', 'rb').read(), 9)
-fh = open('hublist.xml.bz2', 'wb')
-fh.write(tarbz2contents)
-fh.close()
+with open('hublist.xml.bz2', 'wb') as fh:
+    fh.write(tarbz2contents)
