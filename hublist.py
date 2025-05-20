@@ -111,7 +111,7 @@ def addr_complete(addr_hub):
     url_info = urllib.parse.urlparse(addr_hub)
 
     # Add DCHUB protocol to url if no protocol is specified
-    if not url_info.scheme:
+    if "://" not in addr_hub:
         addr_hub = 'dchub://' + addr_hub
 
     # Add NMDC optional port to url if no port is specified
