@@ -35,7 +35,7 @@ function tableFromXML(data) {
                         <td data-order="${hub.getAttribute('Shared')}">${humanFileSize(hub.getAttribute('Shared'), true)}</td>
                         <td>${hub.getAttribute('Users')}</td>
                         <td>
-                            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#hubModal" onclick='showHubModal(${JSON.stringify({
+                            <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#hubModal" onclick='showHubModal(${JSON.stringify({
                                 name: he.encode(hub.getAttribute('Name')),
                                 address: hub.getAttribute('Address'),
                                 description: he.encode(hub.getAttribute('Description')),

@@ -1,70 +1,70 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<meta name="description" content="Adding hub – The DCNF Hublist – Public hublist">
-		<meta name="keywords" content="dcnf,hublist,dchub,adc,nmdc">
-		<link rel="icon" href="favicon.ico">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Adding hub – The DCNF Hublist – Public hublist">
+        <meta name="keywords" content="dcnf,hublist,dchub,adc,nmdc">
+        <link rel="icon" href="favicon.ico">
 
-		<title>Adding hub · The DCNF Hublist</title>
+        <title>Adding hub · The DCNF Hublist</title>
 
-		<!-- Bootstrap core CSS -->
-		<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
+        <!-- Bootstrap core CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
 
-		<style>
-			.bd-placeholder-img {
-				font-size: 1.125rem;
-				text-anchor: middle;
-			}
+        <style>
+            .bd-placeholder-img {
+                font-size: 1.125rem;
+                text-anchor: middle;
+            }
 
-			@media (min-width: 768px) {
-				.bd-placeholder-img-lg {
-					font-size: 3.5rem;
-				}
-			}
-		</style>
-		<!-- Custom styles for this template -->
-		<link href="sign-in.css" rel="stylesheet">
-	</head>
-	<body class="text-center">
-		<form class="form-signin" method="POST" action="https://dev.staticman.net/v3/entry/github/DCNF/Hublist/master/hubs">
-			<input name="options[redirect]" type="hidden" value="https://dcnf.github.io/Hublist/">
-			<h1>The DCNF Hublist</h1>
-			<p>Add a hub using this form!</p>
+            @media (min-width: 768px) {
+                .bd-placeholder-img-lg {
+                    font-size: 3.5rem;
+                }
+            }
+        </style>
+        <!-- Custom styles for this template -->
+        <link href="sign-in.css" rel="stylesheet">
+    </head>
+    <body class="text-center">
+        <form class="form-signin" method="POST" action="https://dev.staticman.net/v3/entry/github/DCNF/Hublist/master/hubs">
+            <input name="options[redirect]" type="hidden" value="https://dcnf.github.io/Hublist/">
+            <h1>The DCNF Hublist</h1>
+            <p>Add a hub using this form!</p>
 
-			<div class="form-group">
-				<label for="fields[nick]" class="sr-only">Your Nick</label>	
-				<input type="text" id="fields[nick]" name="fields[nick]" class="form-control" placeholder="Enter your Nick" required autofocus>
-			</div>
+            <div class="mb-3">
+                <label for="fields[nick]" class="form-label visually-hidden">Your Nick</label>	
+                <input type="text" id="fields[nick]" name="fields[nick]" class="form-control" placeholder="Enter your Nick" required autofocus>
+            </div>
 
-			<div class="form-group">
-				<label for="fields[name]" class="sr-only">The Hub Name</label>
-				<input type="text" id="fields[name]" name="fields[name]" class="form-control" placeholder="Enter the Hub Name" required>
-			</div>
+            <div class="mb-3">
+                <label for="fields[name]" class="form-label visually-hidden">The Hub Name</label>
+                <input type="text" id="fields[name]" name="fields[name]" class="form-control" placeholder="Enter the Hub Name" required>
+            </div>
 
-			<div class="form-group">
-				<label for="fields[address]" class="sr-only">The Hub Address</label>
-				<input type="url" id="fields[address]" name="fields[address]" class="form-control" placeholder="Enter the Hub Address" pattern="(.{0,2}dc.{0,3}s?:\/\/.+)\w+:?([0-9]*)" required>
-			</div>
+            <div class="mb-3">
+                <label for="fields[address]" class="form-label visually-hidden">The Hub Address</label>
+                <input type="url" id="fields[address]" name="fields[address]" class="form-control" placeholder="Enter the Hub Address" pattern="(.{0,2}dc.{0,3}s?:\/\/.+)\w+:?([0-9]*)" required>
+            </div>
 
-			<div class="form-group">
-				<label for="fields[encoding]" class="sr-only">The Hub Encoding</label>
-				<select class="form-control" id="fields[encoding]" name="fields[encoding]" class="form-control" placeholder="Choose the Hub Encoding" required>
-					<option value="" selected disabled>Choose the Hub Encoding</option>
-					<option value="utf-8">UTF-8</option>
-					<option value="cp1250">Central Europe: CP1250</option>
-					<option value="cp1251">Cyrillic: CP1251</option>
-					<option value="cp1252">Western Europe: CP1252</option>
-					<option value="cp1253">Greek: CP1253</option>
-					<option value="cp1254">Turkish: CP1254</option>
-					<option value="cp1256">Hebrew: CP1256</option>
-					<option value="cp1257">Baltic: CP1257</option>
-					<option value="gb18030">China: GB18030</option>
-				</select>
-			</div>
+            <div class="mb-3">
+                <label for="fields[encoding]" class="form-label visually-hidden">The Hub Encoding</label>
+                <select class="form-select" id="fields[encoding]" name="fields[encoding]" required>
+                    <option value="" selected disabled>Choose the Hub Encoding</option>
+                    <option value="utf-8">UTF-8</option>
+                    <option value="cp1250">Central Europe: CP1250</option>
+                    <option value="cp1251">Cyrillic: CP1251</option>
+                    <option value="cp1252">Western Europe: CP1252</option>
+                    <option value="cp1253">Greek: CP1253</option>
+                    <option value="cp1254">Turkish: CP1254</option>
+                    <option value="cp1256">Hebrew: CP1256</option>
+                    <option value="cp1257">Baltic: CP1257</option>
+                    <option value="gb18030">China: GB18030</option>
+                </select>
+            </div>
 
-			<button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
-		</form>
-	</body>
+            <button class="btn btn-lg btn-primary w-100" type="submit">Submit</button>
+        </form>
+    </body>
 </html>
