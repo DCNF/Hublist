@@ -25,7 +25,7 @@ function tableFromXML(data) {
             <tbody>
                 ${Array.from(data).map(hub => `
                     <tr>
-                        <td title="${he.encode(hub.getAttribute('Description'))}" class="${hub.getAttribute('Status')}" data-order="${he.encode(hub.getAttribute('Name'))}">
+                        <td title="${he.encode(hub.getAttribute('Description'))}" class="${hub.getAttribute('Status') === 'Online' ? 'table-success' : ''}" data-order="${he.encode(hub.getAttribute('Name'))}">
                             ${he.encode(hub.getAttribute('Name'))}
                         </td>
                         <td>
