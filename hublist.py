@@ -16,15 +16,17 @@ own_hublist = "https://dcnf.github.io/Hublist/ownDataHublist.xml"
 
 internet_hublists = [
     # list based on:
-    # - DC++: [dcpp/SettingsManager.cpp#l197](https://sourceforge.net/p/dcplusplus/code/ci/eb139c8d81a96ed6627b6fda8c94ffb325a0a308/tree/dcpp/SettingsManager.cpp#l197)
-    # - AirDC++: [airdcpp/airdcpp/SettingsManager.cpp#L426](https://github.com/airdcpp/airdcpp-windows/blob/8c359424d883ba836b344383c862ba0b386fc30b/airdcpp/airdcpp/SettingsManager.cpp#L426)
-    # - FlyLinkDC: [compiled/Settings/flylinkdc-config-r6xx.xml#L19](https://github.com/pavel-pimenov/flylinkdc-r6xx/blob/094f312eb07718f1583a7e08da4abe4557d01835/compiled/Settings/flylinkdc-config-r6xx.xml#L19)
-    # - EiskaltDC++: [dcpp/SettingsManager.cpp#L165](https://github.com/eiskaltdcpp/eiskaltdcpp/blob/9b65fdd4f51b93a90a63ac84d638b7ff1f79771d/dcpp/SettingsManager.cpp#L165)
+    # - DC++: [dcpp/SettingsManager.cpp#l198](https://sourceforge.net/p/dcplusplus/code/ci/730492fc723149c32229e997467477d19e4f4539/tree/dcpp/SettingsManager.cpp#l198)
+    # - AirDC++: [airdcpp/airdcpp/settings/SettingsManager.cpp#L444](https://github.com/airdcpp/airdcpp-windows/blob/bbecdd9e14015118cefbe8801f508b7eff6f3867/airdcpp/airdcpp/settings/SettingsManager.cpp#L444)
+    # - FlyLinkDC: [compiled/Settings/flylinkdc-config-r6xx.xml#L19](https://github.com/pavel-pimenov/flylinkdc-r6xx/blob/e4a93a0da785ebdd23217ebb91316445d410f800/compiled/Settings/flylinkdc-config-r6xx.xml#L19)
+    # - EiskaltDC++: [dcpp/SettingsManager.cpp#L165](https://github.com/eiskaltdcpp/eiskaltdcpp/blob/697db4b03e3d9ffa48b3d4c74fd043dee7663266/dcpp/SettingsManager.cpp#L165)
+    # - BlackLink: [client/ConfCore.cpp#L22](https://github.com/zipper9/blacklink/blob/bf987fcb4077ffd6232461314e4e90acdb3167f6/client/ConfCore.cpp#L22)
     "https://www.te-home.net/?do=hublist&get=hublist.xml",
     "https://dchublist.org/hublist.xml.bz2",
     "https://dchublist.ru/hublist.xml.bz2",
+    "https://dchublist.biz/?do=hublist.xml.bz2",
     "https://hublist.pwiam.com/hublist.xml",
-    "http://dchublist.biz/?do=hublist.xml.bz2",
+    "https://dchublists.com/?do=hublist&get=hublist.xml.bz2",
     "https://dcnf.github.io/Hublist/hublist.xml.bz2", # a backup
 ]
 
