@@ -1,32 +1,127 @@
 # Hublist
 
-## How to use hublist.py?
+A Python script that aggregates, cleans, and verifies DC++ hub lists from multiple sources.
 
-This hublist uses data from different XML / XML.BZ2 hublist.  
-If you set the location of DCPing pinger as an argument, it'll try to ping every hub listed in all hublist.  
-It takes ~40 minutes to ping all differents lists of hubs.
+## Features
 
-### Running hublist.py with the pinger DCPing
+- **Multi-source aggregation**: Downloads hub lists from various online sources
+- **Smart deduplication**: Identifies and merges duplicate hubs based on addresses, failovers, and metadata
+- **Hub verification**: Optional ping verification using DCPing tool
+- **Smart filtering**: Removes full hubs and explicitly offline hubs, keeps others with offline status
+- **Concurrent processing**: Multi-threaded ping operations for faster verification
+- **Output formats**: Generates both XML and compressed BZ2 versions
+- **Configurable**: Command-line options for timeout, workers, output files, and more
 
-#### `DCPing`?
+## Installation
 
-**DCPing** is an open-source pinger build on GitHub: https://github.com/direct-connect/go-dcpp/tree/master/cmd/dcping.  
-You can have a functionnal version by [building its source](https://github.com/direct-connect/go-dcpp/tree/master/cmd/dcping#build).
+### Prerequisites
 
+- Python 3.6 or higher
+- DCPing tool (optional, for hub verification)
 
-The pinger helps us having more accurate data of an hub.
+### DCPing Installation (Optional)
 
-Version [v0.26.0](https://github.com/direct-connect/go-dcpp/tree/v0.26.0) of DCPing is compatible with this script.
+DCPing is required for hub verification. You can build it from source:
 
+```bash
+# Clone the repository
+git clone https://github.com/direct-connect/go-dcpp.git
+go build ./cmd/dcping
 ```
-$ python3 hublist.py "[folder_to_dcping]/dcping"
+
+The script is compatible with DCPing version v0.26.0 or later.
+
+## Usage
+
+### Basic Usage (Without Verification)
+
+```bash
+python3 hublist.py
 ```
 
-### Running hublist.py alone
+This will download hub lists, deduplicate entries, and generate `hublist.xml` and `hublist.xml.bz2` without ping verification.
 
+### With Hub Verification
+
+```bash
+python3 hublist.py --ping-tool /path/to/dcping
 ```
-$ python3 hublist.py
+
+### Command-line Options
+
+```bash
+python3 hublist.py --help
 ```
+
+Available options:
+- `--ping-tool PATH`: Path to DCPing executable for hub verification
+- `--no-ping`: Skip hub verification even if ping tool is available
+- `--timeout SECONDS`: Network timeout in seconds (default: 10)
+- `--output FILE`: Output XML filename (default: hublist.xml)
+- `--max-ping-workers NUM`: Maximum concurrent ping workers (default: 5)
+- `--ping-timeout SECONDS`: Ping timeout per hub in seconds (default: 15)
+- `--verbose, -v`: Enable verbose output
+- `--help`: Show help message
+
+## How It Works
+
+### 1. Download Phase
+
+The script downloads hub lists from configured sources.
+
+### 2. Processing Phase
+
+1. **Parsing**: Extracts hub information from XML/BZ2 files
+2. **Normalization**: Completes missing protocols and ports
+3. **Filtering**: Removes hubs with unsupported encodings or protocols
+4. **Deduplication**: Identifies and merges duplicate hubs using:
+   - Direct address comparison
+   - Failover address matching
+   - Name/Description/Encoding matching (for NMDC hubs)
+
+### 3. Verification Phase (Optional)
+
+If DCPing is provided:
+- Pings each hub to verify online status
+- **Removes full hubs** (ErrCode 226) and **explicitly offline hubs**
+- **Keeps hubs with other errors** (timeout, network issues) with 'Offline' status
+- Updates hub statistics (users, shared data, etc.)
+
+### 4. Output Generation
+
+Creates two files:
+- `hublist.xml`: Clean, deduplicated hub list in XML format
+- `hublist.xml.bz2`: Compressed version for efficient distribution
+
+## Configuration
+
+### Source Lists
+
+Edit the following variables in `hublist.py`:
+
+```python
+OWN_HUBLIST = "https://dcnf.github.io/Hublist/ownDataHublist.xml"
+INTERNET_HUBLISTS = [
+    "https://www.te-home.net/?do=hublist&get=hublist.xml",
+    "https://dchublist.org/hublist.xml.bz2",
+    # ... more sources
+]
+LOCAL_HUBLISTS = []  # Add local file paths here
+```
+
+### Supported Protocols and Encodings
+
+The script supports:
+- **Protocols**: ADC, ADCS, DCHUB, DCHUBS, NMDC, NMDCS
+- **NMDC Encodings**: UTF-8, CP1250-1257, GB18030
+
+### Hub Attributes
+
+The script processes these hub attributes:
+- Address, Name, Description, Users, Country
+- Shared, Minshare, Minslots, Maxhubs, Maxusers
+- Reliability, Rating, Encoding, Software, Website
+- Email, ASN, Operators, Bots, Infected, Status, Failover
 
 ## Which attribute is used in most-used DC clients?
 
@@ -35,11 +130,13 @@ $ python3 hublist.py
 - EiskaltDC++: [dcpp/FavoriteManager.cpp#L255](https://github.com/eiskaltdcpp/eiskaltdcpp/blob/1d113ac/dcpp/FavoriteManager.cpp#L255)
 - FlyLinkDC: [windows/PublicHubsFrm.cpp#L53](https://github.com/pavel-pimenov/flylinkdc-r6xx/blob/92da92a/windows/PublicHubsFrm.cpp#L53)
 
-## Why some hubs are offline, and written on your hublist as online?
+### Debug Mode
 
-I'm doing update weekly, and not every hour like other hublist, it's why this hublist doesn't have the very last accurate online / offline mode.<br>
-Sadly It's not on on my priority of the moment to run hublist.py / commit every hour a xml file. If you have an automatic solution in mind, do not hesitate to contact me by opening an issue!
+Use verbose output to see detailed processing:
+```bash
+python3 hublist.py --ping-tool ./dcping --verbose
+```
 
 ## License
 
-[GPLv2 or later](https://github.com/DCNF/Hublist/blob/master/LICENSE)
+This project is licensed under the GPLv2 or later License - see the [LICENSE](LICENSE) file for details.
