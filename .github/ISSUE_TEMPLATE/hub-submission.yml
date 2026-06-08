@@ -1,0 +1,58 @@
+name: Submit a Hub
+description: Add a new hub to the DCNF Hublist
+title: "[Hub] "
+labels: ["hub-submission"]
+body:
+  - type: input
+    id: nick
+    attributes:
+      label: Your nickname
+      description: Your nickname or handle
+      placeholder: e.g. JohnDoe
+    validations:
+      required: true
+
+  - type: input
+    id: name
+    attributes:
+      label: Hub name
+      description: The name of the hub as it appears in the hub list
+      placeholder: e.g. My Awesome Hub
+    validations:
+      required: true
+
+  - type: input
+    id: address
+    attributes:
+      label: Hub address
+      description: "The full address of the hub (e.g. adcs://hub.example.com:411)"
+      placeholder: "adcs://hub.example.com:411"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: encoding
+    attributes:
+      label: Encoding
+      description: The character encoding used by the hub
+      options:
+        - UTF-8
+        - CP1250 (Central Europe)
+        - CP1251 (Cyrillic)
+        - CP1252 (Western Europe)
+        - CP1253 (Greek)
+        - CP1254 (Turkish)
+        - CP1256 (Hebrew)
+        - CP1257 (Baltic)
+        - GB18030 (China)
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional notes
+      description: Any other information about the hub (optional)
+      placeholder: e.g. Special rules, registration required, etc.
+    validations:
+      required: false

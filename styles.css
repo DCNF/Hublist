@@ -1,0 +1,259 @@
+:root {
+    --color-online: #22c55e;
+    --color-offline: #94a3b8;
+    --color-accent: #3b82f6;
+}
+
+/* Nav */
+nav.container {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--pico-background-color);
+    border-bottom: 1px solid var(--pico-border-color);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+/* Header */
+header h1 {
+    margin-bottom: 0.25rem;
+}
+
+.hublist-urls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.hublist-url {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0;
+}
+
+.hublist-url code {
+    font-size: 0.875rem;
+    word-break: break-all;
+}
+
+.copy-btn {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    margin: 0;
+}
+
+/* Search bar */
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-bar input[type="search"] {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 0;
+}
+
+.hub-count {
+    font-size: 0.875rem;
+    opacity: 0.7;
+    white-space: nowrap;
+}
+
+/* Table */
+#hubTable {
+    margin-bottom: 1rem;
+}
+
+#hubTable th.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: 1.5rem;
+}
+
+#hubTable th.sortable::after {
+    content: '↕';
+    position: absolute;
+    right: 0.5rem;
+    opacity: 0.3;
+}
+
+#hubTable th.sort-asc::after {
+    content: '↑';
+    opacity: 0.8;
+}
+
+#hubTable th.sort-desc::after {
+    content: '↓';
+    opacity: 0.8;
+}
+
+#hubTable th.sortable:hover::after {
+    opacity: 0.6;
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    margin-right: 0.25rem;
+}
+
+.status-online {
+    color: var(--color-online);
+}
+
+.status-offline {
+    color: var(--color-offline);
+}
+
+/* Clickable rows */
+.hub-row {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.hub-row:hover {
+    background-color: var(--pico-muted-border-color);
+}
+
+.hub-row:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+}
+
+/* Loading */
+.loading {
+    text-align: center;
+    padding: 2rem;
+}
+
+/* Error */
+.error {
+    text-align: center;
+    padding: 2rem;
+    color: var(--pico-del-color);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+.pagination button {
+    margin: 0;
+    padding: 0.5rem 1rem;
+}
+
+.pagination #pageInfo {
+    font-size: 0.875rem;
+    min-width: 5rem;
+    text-align: center;
+}
+
+/* Modal */
+dialog article {
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+dialog article header p {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+dialog article header .status-badge {
+    font-size: 0.75rem;
+    font-weight: normal;
+}
+
+dialog section {
+    margin-bottom: 1rem;
+}
+
+dialog section:last-child {
+    margin-bottom: 0;
+}
+
+dialog section h6 {
+    margin-bottom: 0.5rem;
+    opacity: 0.7;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+dialog dl {
+    margin-bottom: 0;
+}
+
+dialog dt {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+dialog dd {
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    word-break: break-all;
+}
+
+dialog dd:last-child {
+    margin-bottom: 0;
+}
+
+.address-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.address-cell a {
+    word-break: break-all;
+}
+
+.address-cell .copy-btn {
+    flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    dialog article {
+        max-width: 100%;
+        max-height: 100%;
+        height: 100%;
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .hublist-url {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .search-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .hub-count {
+        text-align: right;
+    }
+}

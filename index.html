@@ -1,181 +1,86 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description" content="The DCNF Hublist – Public hublist">
-        <meta name="keywords" content="dcnf,hublist,dchub,adc,nmdc">
-        <link rel="icon" href="favicon.ico">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="description" content="The DCNF Hublist – Public hublist for ADC, DCHUB and NMDC clients">
+    <meta name="keywords" content="dcnf,hublist,dchub,adc,nmdc">
+    <link rel="icon" href="favicon.ico">
 
-        <title>The DCNF Hublist</title>
+    <title>The DCNF Hublist</title>
 
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
 
-        <!--  DataTables CSS -->
-        <link href="https://cdn.datatables.net/v/bs5/dt-2.3.1/r-3.0.4/rr-1.5.0/datatables.min.css" rel="stylesheet" integrity="sha384-zoQ9e1Fw2QgtoQ40bGpKAKPr3xL882kOh//BvBbmkMeZSMO3rf7S4DrNtTSEMrJJ" crossorigin="anonymous">
+<body>
+    <nav class="container" aria-label="Main">
+        <ul>
+            <li><strong>The DCNF Hublist</strong></li>
+        </ul>
+        <ul>
+            <li><a href="https://github.com/DCNF/Hublist/issues/new?template=hub-submission.yml" class="contrast">Add hub</a></li>
+        </ul>
+    </nav>
 
-        <!-- Custom styles for this template -->
-        <link href="starter-template.css" rel="stylesheet">
-        <link href="custom.css" rel="stylesheet">
-    </head>
-
-    <body>
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-            <a class="navbar-brand" href="#">The DCNF Hublist</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Download client list</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="./hublist.xml">The XML hublist</a></li>
-                            <li><a class="dropdown-item" href="./hublist.xml.bz2">The XML.BZ2 hublist</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"  href="adding-hub.html" >Adding a new hub</a>
-                    </li>
-                </ul>
+    <main class="container">
+        <header>
+            <h1>The DCNF Hublist</h1>
+            <p>Browse ADC, DCHUB and NMDC hubs.</p>
+            <p>Add one of these URLs to your DC client's public hub list:</p>
+            <div class="hublist-urls">
+                <p class="hublist-url">
+                    <code>https://dcnf.github.io/Hublist/hublist.xml</code>
+                    <button class="outline copy-btn" onclick="copyText(this, 'https://dcnf.github.io/Hublist/hublist.xml')" aria-label="Copy XML URL">Copy</button>
+                </p>
+                <p class="hublist-url">
+                    <code>https://dcnf.github.io/Hublist/hublist.xml.bz2</code>
+                    <button class="outline copy-btn" onclick="copyText(this, 'https://dcnf.github.io/Hublist/hublist.xml.bz2')" aria-label="Copy BZ2 URL">Copy</button>
+                </p>
             </div>
-        </nav>
+        </header>
 
-        <main role="main" class="container">
-
-            <div class="starter-template">
-                <h1>The DCNF Hublist</h1>
-                <p class="lead">Here you can see a list of ADC(S), DCHUB(S) and NMDC(S) Hub.<br>To use our hublist in any DC client, copy one of these links in File > Settings > Downloads > Public Hubs List:<br>
-                    <a href="./hublist.xml">https://dcnf.github.io/Hublist/hublist.xml</a> or <a href="./hublist.xml.bz2">https://dcnf.github.io/Hublist/hublist.xml.bz2</a>.</p>
+        <section id="hubSection">
+            <div class="search-bar">
+                <input type="search" id="searchInput" placeholder="Search hubs..." aria-label="Search hubs">
+                <span id="hubCount" class="hub-count"></span>
             </div>
 
-            <div id="HublistTable"></div>
-            
-            <div class="modal fade" id="hubModal" tabindex="-1" role="dialog" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="hubModalName"></h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <table class="table table-responsive table-striped" style="display:inline-table;">
-                                <tbody style="width:100%">
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Name:</th>
-                                        <td id="hubname">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Description:</th>
-                                        <td class="text-break" id="hubdescription">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Address:</th>
-                                        <td id="hubaddress">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Failover:</th>
-                                        <td id="hubfailover">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Encoding:</th>
-                                        <td id="hubencoding">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Status:</th>
-                                        <td id="hubstatus">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Users:</th>
-                                        <td id="hubusers">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Operators:</th>
-                                        <td id="huboperators">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Bots:</th>
-                                        <td id="hubbots">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Infected:</th>
-                                        <td id="hubinfected">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Shared:</th>
-                                        <td id="hubshared">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Minshare:</th>
-                                        <td id="hubminshare">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Minslots:</th>
-                                        <td id="hubminslots">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Maxhubs:</th>
-                                        <td id="hubmaxhubs">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Maxusers:</th>
-                                        <td id="hubmaxusers">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Reliability:</th>
-                                        <td id="hubreliability">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Rating:</th>
-                                        <td id="hubrating">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Country:</th>
-                                        <td id="hubcountry">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">ASN:</th>
-                                        <td id="hubasn">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Software:</th>
-                                        <td id="hubsoftware">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Website:</th>
-                                        <td id="hubwebsite">N/A</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="padding-modal" scope="row">Email:</th>
-                                        <td id="hubemail">N/A</td>
-                                    </tr>					
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
+            <div class="overflow-auto">
+                <table class="striped" id="hubTable">
+                    <thead>
+                        <tr>
+                            <th scope="col" data-sort="name" class="sortable">Name</th>
+                            <th scope="col" data-sort="shared" class="sortable">Shared</th>
+                            <th scope="col" data-sort="users" class="sortable">Users</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hubTableBody"></tbody>
+                </table>
             </div>
 
-        </main><!-- /.container -->
+            <div id="loading" class="loading" aria-busy="true">Loading hubs...</div>
+            <div id="error" class="error" hidden></div>
 
-        <!-- JavaScript -->
-        <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
-        <script src="https://cdn.datatables.net/v/bs5/dt-2.3.1/r-3.0.4/rr-1.5.0/datatables.min.js" integrity="sha384-yEqb/5oWxoqcpdFXPHbNwBeF0CtbmXARXVdl4EN6bwvulamQjKSVum0QeyfTy+g4" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/he@1.2.0/he.min.js"></script>
+            <nav id="pagination" class="pagination" aria-label="Pagination" hidden>
+                <button id="prevPage" class="outline" aria-label="Previous page">&laquo; Prev</button>
+                <span id="pageInfo"></span>
+                <button id="nextPage" class="outline" aria-label="Next page">Next &raquo;</button>
+            </nav>
+        </section>
+    </main>
 
-        <script type='text/javascript' src='data.js'></script>
+    <dialog id="hubModal">
+        <article>
+            <header>
+                <button aria-label="Close" rel="prev" onclick="closeModal()"></button>
+                <p id="modalTitle"></p>
+            </header>
+            <div id="modalBody"></div>
+        </article>
+    </dialog>
 
-        <script type="text/javascript">
-            readXMLHublist('hublist.xml');
-        </script>
-    </body>
+    <script src="app.js"></script>
+</body>
 </html>
