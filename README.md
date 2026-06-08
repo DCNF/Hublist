@@ -7,7 +7,7 @@ A Python script that aggregates, cleans, and verifies DC++ hub lists from multip
 - **Multi-source aggregation**: Downloads hub lists from various online sources
 - **Smart deduplication**: Identifies and merges duplicate hubs based on addresses, failovers, and metadata
 - **Hub verification**: Optional ping verification using DCPing tool
-- **Smart filtering**: Removes full hubs and explicitly offline hubs, keeps others with offline status
+- **Smart filtering**: Tracks hubs offline across consecutive sessions and removes them only if no external source still references them
 - **Concurrent processing**: Multi-threaded ping operations for faster verification
 - **Output formats**: Generates both XML and compressed BZ2 versions
 - **Configurable**: Command-line options for timeout, workers, output files, and more
@@ -17,7 +17,7 @@ A Python script that aggregates, cleans, and verifies DC++ hub lists from multip
 ### Prerequisites
 
 - Python 3.6 or higher
-- DCPing tool (optional, for hub verification)
+- [DCPing tool](https://github.com/direct-connect/go-dcpp) (optional, for hub verification)
 
 ### DCPing Installation (Optional)
 
@@ -72,20 +72,24 @@ The script downloads hub lists from configured sources.
 ### 2. Processing Phase
 
 1. **Parsing**: Extracts hub information from XML/BZ2 files
-2. **Normalization**: Completes missing protocols and ports
-3. **Filtering**: Removes hubs with unsupported encodings or protocols
-4. **Deduplication**: Identifies and merges duplicate hubs using:
+2. **Source tagging**: Each hub is tagged with its origin (`own`, `external`, or `internal` for the previously generated list)
+3. **Normalization**: Completes missing protocols and ports
+4. **Filtering**: Removes hubs with unsupported encodings or protocols
+5. **Deduplication (phase 1)**: Identifies and merges duplicate hubs using:
    - Direct address comparison
    - Failover address matching
    - Name/Description/Encoding matching (for NMDC hubs)
+   
+   During merge, the best `_source` tag is preserved (`own` > `external` > `internal`) while attribute values from `internal` override those from `external`/`own` (more trustworthy).
 
 ### 3. Verification Phase (Optional)
 
 If DCPing is provided:
-- Pings each hub to verify online status
-- **Removes full hubs** (ErrCode 226) and **explicitly offline hubs**
-- **Keeps hubs with other errors** (timeout, network issues) with 'Offline' status
-- Updates hub statistics (users, shared data, etc.)
+- Pings each unique hub to verify online status
+- Removes full hubs (ErrCode 226)
+- Marks unreachable hubs as `Offline`
+- Removes a hub only if it is **only** known from the previously generated list AND was already `Offline` in that list AND is still `Offline` now — hubs referenced by any external/own source are kept
+- **Deduplication (phase 2)**: Re-merges ping results to incorporate updated attributes (address, failover, etc.) from the ping tool
 
 ### 4. Output Generation
 
@@ -101,12 +105,13 @@ Edit the following variables in `hublist.py`:
 
 ```python
 OWN_HUBLIST = "https://dcnf.github.io/Hublist/ownDataHublist.xml"
-INTERNET_HUBLISTS = [
+INTERNAL_HUBLIST = "https://dcnf.github.io/Hublist/hublist.xml.bz2"
+EXTERNAL_HUBLISTS = [
     "https://www.te-home.net/?do=hublist&get=hublist.xml",
     "https://dchublist.org/hublist.xml.bz2",
     # ... more sources
 ]
-LOCAL_HUBLISTS = []  # Add local file paths here
+LOCAL_HUBLISTS = []  # Add local file paths here (treated as 'external')
 ```
 
 ### Supported Protocols and Encodings

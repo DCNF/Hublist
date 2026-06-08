@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import bz2
+import logging
 import socket
 import sys
 import urllib
@@ -12,12 +13,13 @@ from subprocess import run, PIPE
 import concurrent.futures
 import argparse
 import time
-
 ##### CONFIGURATION #####
 
 OWN_HUBLIST = "https://dcnf.github.io/Hublist/ownDataHublist.xml"
 
-INTERNET_HUBLISTS = [
+INTERNAL_HUBLIST = "https://dcnf.github.io/Hublist/hublist.xml.bz2"
+
+EXTERNAL_HUBLISTS = [
     # list based on:
     # - DC++: [dcpp/SettingsManager.cpp#l198](https://sourceforge.net/p/dcplusplus/code/ci/730492fc723149c32229e997467477d19e4f4539/tree/dcpp/SettingsManager.cpp#l198)
     # - DC++: [dcpp/SettingsManager.cpp#l197](https://sourceforge.net/p/dcplusplus/code/ci/eb139c8d81a96ed6627b6fda8c94ffb325a0a308/tree/dcpp/SettingsManager.cpp#l197)
@@ -34,7 +36,6 @@ INTERNET_HUBLISTS = [
     "https://dchublist.biz/?do=hublist.xml.bz2",
     "https://hublist.pwiam.com/hublist.xml",
     "https://dchublists.com/?do=hublist&get=hublist.xml.bz2",
-    "https://dcnf.github.io/Hublist/hublist.xml.bz2", # a backup
 ]
 
 LOCAL_HUBLISTS = [
@@ -49,7 +50,12 @@ MAX_CONCURRENT_PINGS = 5
 PING_TIMEOUT = 15
 
 # Supported NMDC Encodings
-SUPPORTED_ENCODING = ['utf-8', 'cp1250', 'cp1251', 'cp1252', 'cp1253', 'cp1254', 'cp1256', 'cp1257', 'gb18030']
+SUPPORTED_ENCODING = {'utf-8', 'cp1250', 'cp1251', 'cp1252', 'cp1253', 'cp1254', 'cp1256', 'cp1257', 'gb18030'}
+
+# Status constants
+STATUS_OFFLINE = 'Offline'
+STATUS_ERROR = 'Error'
+ENCODING_UTF8 = 'UTF-8'
 
 # Protocol schemas - centralized definition
 PROTOCOLS = {
@@ -70,33 +76,21 @@ SUPPORTED_SCHEMAS_ADC_SECURE = {p for p, info in PROTOCOLS.items() if info['type
 SUPPORTED_SCHEMAS_ADC_UNSECURE = {p for p, info in PROTOCOLS.items() if info['type'] == 'adc' and not info['secure']}
 
 # Helper functions for protocol checking
-def is_dc_protocol(scheme):
+def is_dc_protocol(scheme: str) -> bool:
     """Check if scheme is a DC protocol (dchub, dchubs, nmdc, or nmdcs)"""
     return scheme in SUPPORTED_SCHEMAS_DC
 
-def is_adc_protocol(scheme):
+def is_adc_protocol(scheme: str) -> bool:
     """Check if scheme is an ADC protocol (adc or adcs)"""
     return scheme in SUPPORTED_SCHEMAS_ADC
 
-def is_secure_protocol(scheme):
+def is_secure_protocol(scheme: str) -> bool:
     """Check if scheme is a secure protocol (dchubs, nmdcs, or adcs)"""
-    return scheme in SUPPORTED_SCHEMAS_DC_SECURE or scheme in SUPPORTED_SCHEMAS_ADC_SECURE
+    return PROTOCOLS.get(scheme, {}).get('secure', False)
 
-def is_unsecure_protocol(scheme):
-    """Check if scheme is an unsecure protocol (dchub, nmdc, or adc)"""
-    return scheme in SUPPORTED_SCHEMAS_DC_UNSECURE or scheme in SUPPORTED_SCHEMAS_ADC_UNSECURE
-
-def get_protocol_type(scheme):
+def get_protocol_type(scheme: str) -> str | None:
     """Get protocol type ('dc' or 'adc') for a given scheme"""
-    if scheme in PROTOCOLS:
-        return PROTOCOLS[scheme]['type']
-    return None
-
-def is_protocol_secure(scheme):
-    """Check if a specific protocol scheme is secure"""
-    if scheme in PROTOCOLS:
-        return PROTOCOLS[scheme]['secure']
-    return False
+    return PROTOCOLS.get(scheme, {}).get('type')
 
 # Hub attributes
 HUB_ATTRIBUTES = (
@@ -131,7 +125,7 @@ HUB_ATTRIBUTES = (
 
 ##### FUNCTIONS #####
 
-def indent(elem, level=0):
+def indent(elem: ET.Element, level: int = 0) -> None:
     """Pretty-print XML with indentation"""
     """from http://effbot.org/zone/element-lib.htm#prettyprint"""
     i = "\n" + level * "  "
@@ -148,7 +142,7 @@ def indent(elem, level=0):
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
 
-def addr_complete(addr_hub):
+def addr_complete(addr_hub: str) -> str:
     """Complete hub address with protocol and port if missing"""
     if "://" not in addr_hub:
         addr_hub = 'dchub://' + addr_hub
@@ -159,7 +153,7 @@ def addr_complete(addr_hub):
 
     return addr_hub
 
-def hub_addr_compare(addr_hub1, addr_hub2):
+def hub_addr_compare(addr_hub1: str, addr_hub2: str) -> bool:
     """Compare two hub addresses (scheme, hostname and port)"""
     url1 = urllib.parse.urlparse(addr_hub1)
     url2 = urllib.parse.urlparse(addr_hub2)
@@ -178,7 +172,7 @@ def hub_addr_compare(addr_hub1, addr_hub2):
         return False
     return True
 
-def duplicate_hub(hub1, hub2):
+def duplicate_hub(hub1: ET.Element, hub2: ET.Element) -> bool:
     """Check if two hubs are duplicates"""
     # Check addresses
     if hub_addr_compare(hub1.attrib['Address'], hub2.attrib['Address']):
@@ -212,33 +206,57 @@ def duplicate_hub(hub1, hub2):
 
     return False
 
-def priorize_hub(hub):
+def prioritize_hub(hub: ET.Element) -> int:
     """Determine hub priority for sorting"""
     scheme = urllib.parse.urlparse(hub.attrib['Address']).scheme
 
-    if is_adc_protocol(scheme) and is_protocol_secure(scheme):
+    if is_adc_protocol(scheme) and is_secure_protocol(scheme):
         if urllib.parse.urlparse(hub.attrib['Address']).query.startswith('kp='):
             return 1  # ADCS with key
         return 2      # ADCS
-    elif is_adc_protocol(scheme) and not is_protocol_secure(scheme):
+    elif is_adc_protocol(scheme):
         return 3      # ADC
-    elif is_dc_protocol(scheme) and is_protocol_secure(scheme):
+    elif is_dc_protocol(scheme) and is_secure_protocol(scheme):
         return 4      # DCHUBS/NMDCS
-    elif is_dc_protocol(scheme) and not is_protocol_secure(scheme):
+    elif is_dc_protocol(scheme):
         return 5      # DCHUB/NMDC
     return 6          # Other
 
-def hub_merge(hub1, hub2):
-    """Merge attributes from hub2 into hub1 (missing attributes only)"""
+def hub_merge(hub1: ET.Element, hub2: ET.Element, failover_map: dict) -> ET.Element:
+    """Merge attributes from hub2 into hub1 (missing attributes only) and accumulate failovers"""
+    addr = hub1.attrib['Address']
+
+    # Upgrade _source: own > external > internal
+    source_rank = {'own': 0, 'external': 1, 'internal': 2}
+    src1 = hub1.attrib.get('_source', '')
+    src2 = hub2.attrib.get('_source', '')
+    if source_rank.get(src2, 99) < source_rank.get(src1, 99):
+        hub1.attrib['_source'] = src2
+
+    # Collect failovers from both hubs into failover_map
+    for h in [hub1, hub2]:
+        fo = h.attrib.get('Failover')
+        if fo and fo not in failover_map.get(addr, []):
+            failover_map.setdefault(addr, []).append(fo)
+
+    # Merge other attributes (skip Failover, handled via failover_map)
+    # Data priority: internal > external/own
+    data_rank = {'internal': 0, 'external': 1, 'own': 1}
     for att, _ in HUB_ATTRIBUTES:
+        if att == 'Failover':
+            continue
         if att in hub2.attrib:
-            if (hub1.attrib.get(att) is None or hub1.attrib.get(att) == '') and \
-               hub2.attrib.get(att) is not None and hub2.attrib.get(att) != '':
-                hub1.attrib[att] = hub2.attrib[att]
+            val2 = hub2.attrib.get(att)
+            if val2 in (None, ''):
+                continue
+            val1 = hub1.attrib.get(att)
+            if val1 in (None, '') or data_rank.get(src2, 99) < data_rank.get(src1, 99):
+                hub1.attrib[att] = val2
     return hub1
 
-def download_with_retry(url, timeout, max_retries=3):
+def download_with_retry(url: str, timeout: int, max_retries: int = 3) -> bytes | None:
     """Download URL with retry logic"""
+    logger = logging.getLogger(__name__)
     for attempt in range(max_retries):
         try:
             req = urllib.request.Request(url, headers={'User-Agent': 'HublistAggregator/1.0'})
@@ -252,19 +270,20 @@ def download_with_retry(url, timeout, max_retries=3):
         except (urllib.error.URLError, socket.timeout, ConnectionError) as e:
             if attempt < max_retries - 1:
                 wait = 2 ** attempt
-                print(f"  Retry {attempt + 1}/{max_retries} in {wait}s...")
+                logger.info("  Retry %d/%d in %ds...", attempt + 1, max_retries, wait)
                 time.sleep(wait)
             else:
-                print(f"  Failed after {max_retries} attempts: {e}")
+                logger.error("  Failed after %d attempts: %s", max_retries, e)
                 return None
         except bz2.BZ2Error as e:
-            print(f"  BZ2 decompression error: {e}")
+            logger.error("  BZ2 decompression error: %s", e)
             return None
 
     return None
 
-def ping_hub(hub, ping_tool, timeout):
+def ping_hub(hub: ET.Element, ping_tool: str, timeout: int) -> tuple[ET.Element, bool]:
     """Ping a single hub and return result"""
+    logger = logging.getLogger(__name__)
     hub_response = hub
     hub_to_keep = True
 
@@ -278,31 +297,33 @@ def ping_hub(hub, ping_tool, timeout):
         result = run(cmd, check=False, stdout=PIPE, stderr=PIPE, timeout=timeout)
 
         if result.returncode != 0:
-            hub_response.attrib['Status'] = 'Offline'
+            hub_response.attrib['Status'] = STATUS_OFFLINE
             return hub_response, hub_to_keep  # Keep with offline status
 
         hub_response = ET.fromstring(result.stdout)
         hub_response.attrib['Address'] = addr_complete(hub_response.attrib['Address'])
+        hub_response.attrib['_source'] = hub.attrib.get('_source', '')
+        if hub_response.attrib.get('Failover'):
+            hub_response.attrib['Failover'] = addr_complete(hub_response.attrib['Failover'])
 
-        if hub_response.attrib.get('Status') == 'Error':
+        if hub_response.attrib.get('Status') == STATUS_ERROR:
             if hub_response.attrib.get('ErrCode') == '226':
                 return hub_response, False
-            elif hub_response.attrib.get('Status') == 'Offline':
-                return hub_response, False
             else:
-                hub.attrib['Status'] = 'Offline'
+                hub.attrib['Status'] = STATUS_OFFLINE
                 hub_response = hub
                 return hub_response, hub_to_keep  # Keep with offline status
 
         return hub_response, hub_to_keep
 
     except Exception as e:
-        print(f"  Ping error: {e}")
-        hub.attrib['Status'] = 'Offline'
+        logger.error("  Ping error: %s", e)
+        hub.attrib['Status'] = STATUS_OFFLINE
         return hub, hub_to_keep  # Keep with offline status
 
-def process_hubs_concurrently(hubs, ping_tool, timeout, max_workers):
+def process_hubs_concurrently(hubs: list[ET.Element], ping_tool: str, timeout: int, max_workers: int) -> list[tuple]:
     """Process hubs with concurrent pings"""
+    logger = logging.getLogger(__name__)
     results = []
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -317,15 +338,15 @@ def process_hubs_concurrently(hubs, ping_tool, timeout, max_workers):
                 hub_response, hub_to_keep = future.result()
                 results.append((hub, hub_response, hub_to_keep))
             except Exception as e:
-                print(f"Exception pinging hub {hub.attrib['Address']}: {e}")
-                hub.attrib['Status'] = 'Offline'
+                logger.error("Exception pinging hub %s: %s", hub.attrib['Address'], e)
+                hub.attrib['Status'] = STATUS_OFFLINE
                 results.append((hub, hub, True))  # Keep with offline status
 
     return results
 
 ##### MAIN FUNCTION #####
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(description='Aggregate and clean DC++ hub lists')
     parser.add_argument('--ping-tool', help='Path to ping tool for hub verification')
     parser.add_argument('--timeout', type=int, default=DEFAULT_TIMEOUT,
@@ -343,35 +364,48 @@ def main():
 
     args = parser.parse_args()
 
+    # Setup logging
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.INFO,
+        format='%(message)s'
+    )
+    logger = logging.getLogger(__name__)
+
     socket.setdefaulttimeout(args.timeout)
 
-    print("=== Hublist Aggregator ===")
-    print(f"Timeout: {args.timeout}s")
+    logger.info("=== Hublist Aggregator ===")
+    logger.info("Timeout: %ds", args.timeout)
     if args.ping_tool and not args.no_ping:
-        print(f"Ping tool: {args.ping_tool}")
-        print(f"Ping workers: {args.max_ping_workers}")
-        print(f"Ping timeout: {args.ping_timeout}s")
+        logger.info("Ping tool: %s", args.ping_tool)
+        logger.info("Ping workers: %d", args.max_ping_workers)
+        logger.info("Ping timeout: %ds", args.ping_timeout)
     else:
-        print("Ping verification: Disabled")
-    print()
+        logger.info("Ping verification: Disabled")
+    logger.info("")
 
     # Download hub lists
-    print("Downloading hub lists...")
+    logger.info("Downloading hub lists...")
     xml_contents = []
-    all_sources = [OWN_HUBLIST] + INTERNET_HUBLISTS
 
-    for url in all_sources:
-        print(f"  {url}")
+    # Build source list with tags
+    sources = []
+    sources.append((OWN_HUBLIST, 'own'))
+    sources.append((INTERNAL_HUBLIST, 'internal'))
+    for url in EXTERNAL_HUBLISTS:
+        sources.append((url, 'external'))
+
+    for url, source_tag in sources:
+        logger.info("  %s", url)
         content = download_with_retry(url, args.timeout)
         if content:
-            xml_contents.append(content)
-            print("    ✓ Success")
+            xml_contents.append((content, source_tag))
+            logger.info("    Success")
         else:
-            print("    ✗ Failed")
+            logger.info("    Failed")
 
     # Load local files
     for local_file in LOCAL_HUBLISTS:
-        print(f"  {local_file} (local)")
+        logger.info("  %s (local)", local_file)
         try:
             if local_file.endswith('.bz2'):
                 with bz2.BZ2File(local_file, 'rb') as f:
@@ -380,20 +414,22 @@ def main():
                 with open(local_file, 'rb') as f:
                     content = f.read()
 
-            xml_contents.append(content)
-            print("    ✓ Success")
+            xml_contents.append((content, 'external'))
+            logger.info("    Success")
         except Exception as e:
-            print(f"    ✗ Error: {e}")
+            logger.error("    Error: %s", e)
 
     if not xml_contents:
-        print("Error: No hub lists could be loaded!")
+        logger.error("Error: No hub lists could be loaded!")
         return 1
 
     # Parse and process hubs
-    print(f"\nParsing {len(xml_contents)} hub lists...")
+    logger.info("\nParsing %d hub lists...", len(xml_contents))
     all_hubs = []
+    failover_map = {}
+    prev_offline_addresses = set()
 
-    for content in xml_contents:
+    for content, source_tag in xml_contents:
         try:
             root = ET.fromstring(content)
             for hub in root.iter('Hub'):
@@ -405,6 +441,20 @@ def main():
                 if hub.attrib.get('Failover'):
                     hub.attrib['Failover'] = addr_complete(hub.attrib['Failover'])
 
+                # Tag source
+                hub.attrib['_source'] = source_tag
+
+                # Track failovers in failover_map
+                fo = hub.attrib.get('Failover')
+                if fo:
+                    failover_map.setdefault(hub.attrib['Address'], []).append(fo)
+
+                # Mark hubs offline from previous session
+                if source_tag == 'internal' and hub.attrib.get('Status') == STATUS_OFFLINE:
+                    prev_offline_addresses.add(hub.attrib['Address'].lower())
+                    if fo:
+                        prev_offline_addresses.add(fo.lower())
+
                 scheme = urllib.parse.urlparse(hub.attrib['Address']).scheme
 
                 if is_dc_protocol(scheme):
@@ -412,23 +462,23 @@ def main():
                     if encoding in SUPPORTED_ENCODING:
                         all_hubs.append(hub)
                     elif args.verbose:
-                        print(f"  Skipping DC hub with unsupported encoding: {encoding}")
+                        logger.debug("  Skipping DC hub with unsupported encoding: %s", encoding)
                 elif is_adc_protocol(scheme):
-                    hub.attrib['Encoding'] = 'UTF-8'
+                    hub.attrib['Encoding'] = ENCODING_UTF8
                     all_hubs.append(hub)
                 elif args.verbose:
-                    print(f"  Skipping hub with unsupported scheme: {scheme}")
+                    logger.debug("  Skipping hub with unsupported scheme: %s", scheme)
 
         except ET.ParseError as e:
-            print(f"  XML parse error: {e}")
+            logger.error("  XML parse error: %s", e)
 
-    print(f"Found {len(all_hubs)} hubs total")
+    logger.info("Found %d hubs total", len(all_hubs))
 
     # Sort by priority
-    all_hubs.sort(key=priorize_hub)
+    all_hubs.sort(key=prioritize_hub)
 
     # First aggregate/merge duplicates to get unique hubs
-    print("\nAggregating and merging duplicates...")
+    logger.info("\nAggregating and merging duplicates...")
     unique_hubs = []
     hubs_to_process = list(all_hubs)  # Work on a copy
 
@@ -438,25 +488,24 @@ def main():
         # Find and merge all duplicates of this hub
         for other_hub in list(hubs_to_process):
             if other_hub != current_hub and duplicate_hub(other_hub, current_hub):
-                current_hub = hub_merge(current_hub, other_hub)
+                current_hub = hub_merge(current_hub, other_hub, failover_map)
                 hubs_to_process.remove(other_hub)
 
         unique_hubs.append(current_hub)
         hubs_to_process.remove(current_hub)
 
-    print(f"Aggregated to {len(unique_hubs)} unique hubs")
+    logger.info("Aggregated to %d unique hubs", len(unique_hubs))
 
     # Ping hubs if requested
     clean_hubs = []
 
     if args.ping_tool and not args.no_ping:
-        print(f"\nPinging {len(unique_hubs)} unique hubs...")
+        logger.info("\nPinging %d unique hubs...", len(unique_hubs))
         hub_results = process_hubs_concurrently(
             unique_hubs, args.ping_tool, args.ping_timeout, args.max_ping_workers
         )
 
-        # After pinging, we need to re-aggregate because:
-        print("\nRe-aggregating after ping...")
+        logger.info("\nRe-aggregating after ping...")
 
         # Collect all ping results that should be kept
         pinged_hubs_to_keep = []
@@ -477,35 +526,51 @@ def main():
             # Find and merge all duplicates of this hub
             for other_hub in list(hubs_to_process):
                 if other_hub != current_hub and duplicate_hub(other_hub, current_hub):
-                    current_hub = hub_merge(current_hub, other_hub)
+                    current_hub = hub_merge(current_hub, other_hub, failover_map)
                     hubs_to_process.remove(other_hub)
 
             final_hubs.append(current_hub)
             hubs_to_process.remove(current_hub)
 
-        clean_hubs = final_hubs
+        # Build known_addresses from external, own, and local hubs
+        known_addresses = set()
+        for hub in final_hubs:
+            if hub.attrib.get('_source') in ('external', 'own'):
+                known_addresses.add(hub.attrib['Address'].lower())
+                for fo in failover_map.get(hub.attrib['Address'], []):
+                    known_addresses.add(fo.lower())
+
+        # Filter: internal hubs offline in both sessions and not referenced by other sources
+        clean_hubs = []
+        for hub in final_hubs:
+            is_offline = hub.attrib.get('Status') == STATUS_OFFLINE
+            if is_offline:
+                addr = hub.attrib['Address'].lower()
+                failover = hub.attrib.get('Failover', '').lower()
+                was_offline_prev = (addr in prev_offline_addresses or
+                                   failover in prev_offline_addresses)
+                is_known = (addr in known_addresses or
+                            failover in known_addresses)
+                if was_offline_prev and not is_known:
+                    continue
+            clean_hubs.append(hub)
 
         # Count online/offline
-        online_count = 0
-        offline_count = 0
-        for hub in clean_hubs:
-            if hub.attrib.get('Status') == 'Offline':
-                offline_count += 1
-            else:
-                online_count += 1
+        online_count = sum(1 for h in clean_hubs if h.attrib.get('Status') != STATUS_OFFLINE)
+        offline_count = len(clean_hubs) - online_count
 
-        print(f"  Added to list: {online_count + offline_count} (Online: {online_count}, Offline: {offline_count})")
-        print(f"  Removed: {removed_count}")
+        logger.info("  Added to list: %d (Online: %d, Offline: %d)", online_count + offline_count, online_count, offline_count)
+        logger.info("  Removed: %d", removed_count + (len(final_hubs) - len(clean_hubs)))
     else:
         # Process without pinging
-        print("\nProcessing hubs (no ping verification)...")
+        logger.info("\nProcessing hubs (no ping verification)...")
         clean_hubs = unique_hubs
-        print(f"  Processed: {len(clean_hubs)} hubs")
+        logger.info("  Processed: %d hubs", len(clean_hubs))
 
-    print(f"\nFinal list: {len(clean_hubs)} unique hubs")
+    logger.info("\nFinal list: %d unique hubs", len(clean_hubs))
 
     # Generate output XML
-    print(f"\nGenerating {args.output}...")
+    logger.info("\nGenerating %s...", args.output)
     root = ET.Element('Hublist',
                      Name='The DCNF Hublist',
                      Address='https://dcnf.github.io/Hublist/',
@@ -518,6 +583,14 @@ def main():
         ET.SubElement(cols_elem, 'Column', Name=name, Type=type_)
 
     for hub in clean_hubs:
+        # Use first failover from failover_map if available
+        failovers = failover_map.get(hub.attrib['Address'], [])
+        if failovers:
+            hub.attrib['Failover'] = failovers[0]
+
+        # Remove internal attributes
+        hub.attrib.pop('_source', None)
+
         attribs = {}
         for name, _ in HUB_ATTRIBUTES:
             value = hub.attrib.get(name)
@@ -530,15 +603,15 @@ def main():
 
     # Create compressed version
     bz2_file = args.output + '.bz2'
-    print(f"Generating {bz2_file}...")
+    logger.info("Generating %s...", bz2_file)
     with open(args.output, 'rb') as f:
         compressed = bz2.compress(f.read(), 9)
     with open(bz2_file, 'wb') as f:
         f.write(compressed)
 
-    print("\n=== Done ===")
-    print(f"Output files: {args.output}, {bz2_file}")
-    print(f"Total hubs: {len(clean_hubs)}")
+    logger.info("\n=== Done ===")
+    logger.info("Output files: %s, %s", args.output, bz2_file)
+    logger.info("Total hubs: %d", len(clean_hubs))
 
     return 0
 
